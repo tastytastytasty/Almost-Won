@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Almost Win - Game Simulations" />
+  <title>Almost Win | Simulate</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+</head>
+<body>
+
+  <div id="headerMount"></div>
+
+  <div class="layout-wrapper">
+    <div id="sidebarMount"></div>
+
+    <main class="main-content" id="mainContent" role="main">
+
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="bx bx-joystick" aria-hidden="true"></i>
+          <span data-i18n="simTitle">Game Simulations</span>
+        </h2>
+        <p class="section-subtitle" data-i18n="simSubtitle">Choose a game to simulate. All outcomes use real probability.</p>
+      </div>
+
+      <div class="info-banner">
+        <i class="bx bx-info-circle" aria-hidden="true"></i>
+        <span data-i18n="simBanner">These games simulate real gambling odds. The house edge is built in — just like real casinos.</span>
+      </div>
+
+      <div class="cards-grid three-col">
+
+        <article class="game-card" aria-label="Slot Machine game">
+          <i class="bx bx-tv game-card-icon" aria-hidden="true"></i>
+          <h3 class="game-card-title" data-i18n="slotsTitle">Slot Machine</h3>
+          <p class="game-card-desc" data-i18n="slotsDesc">
+            Spin the reels and try your luck. With a typical RTP of 85–95%,
+            the house keeps 5–15% of every spin.
+          </p>
+          <div class="game-card-stats">
+            <span class="stat-pill danger">House Edge: ~8%</span>
+            <span class="stat-pill">RTP: 92%</span>
+          </div>
+          <button class="btn btn-primary" data-game="slots">
+            <i class="bx bx-play-circle" aria-hidden="true"></i>
+            <span data-i18n="playBtn">Play</span>
+          </button>
+        </article>
+
+        <article class="game-card" aria-label="Coin Flip game">
+          <i class="bx bx-coin game-card-icon" aria-hidden="true"></i>
+          <h3 class="game-card-title" data-i18n="coinTitle">Coin Flip</h3>
+          <p class="game-card-desc" data-i18n="coinDesc">
+            Seems like 50/50 odds — but the house takes a cut on every bet,
+            making it mathematically impossible to win long-term.
+          </p>
+          <div class="game-card-stats">
+            <span class="stat-pill danger">House Edge: ~2.7%</span>
+            <span class="stat-pill">Odds: 48.65%</span>
+          </div>
+          <button class="btn btn-primary" data-game="coinflip">
+            <i class="bx bx-play-circle" aria-hidden="true"></i>
+            <span data-i18n="playBtn">Play</span>
+          </button>
+        </article>
+
+        <article class="game-card" aria-label="Dice Roll game">
+          <i class="bx bx-dice-5 game-card-icon" aria-hidden="true"></i>
+          <h3 class="game-card-title" data-i18n="diceTitle">Dice Roll</h3>
+          <p class="game-card-desc" data-i18n="diceDesc">
+            Roll the dice and beat the dealer. Even with correct odds,
+            the house always tilts the math in their favor.
+          </p>
+          <div class="game-card-stats">
+            <span class="stat-pill danger">House Edge: ~1.4%</span>
+            <span class="stat-pill">Bet Types: 6</span>
+          </div>
+          <button class="btn btn-primary" data-game="dice">
+            <i class="bx bx-play-circle" aria-hidden="true"></i>
+            <span data-i18n="playBtn">Play</span>
+          </button>
+        </article>
+
+      </div>
+
+    </main>
+  </div>
+
+  <div id="tabBarMount"></div>
+
+  <!-- Game Coming Soon Modal -->
+  <div class="modal-overlay hidden" id="gameModal" role="dialog" aria-modal="true" aria-labelledby="gameModalTitle">
+    <div class="modal-box">
+      <button class="modal-close-btn" id="closeGameModal" aria-label="Close modal">
+        <i class="bx bx-x" aria-hidden="true"></i>
+      </button>
+      <div class="modal-icon"><i class="bx bx-joystick" aria-hidden="true"></i></div>
+      <h2 class="modal-title" id="gameModalTitle" data-i18n="gameModalTitle">Game Coming Soon</h2>
+      <p class="modal-body">
+        <span data-i18n="gameModalBody">The game logic for</span>
+        <strong id="gameModalGameName"></strong>
+        <span data-i18n="gameModalBodyEnd"> is not yet implemented. This is a UI prototype.</span>
+      </p>
+      <div class="modal-info-box">
+        <i class="bx bx-bulb" aria-hidden="true"></i>
+        <span data-i18n="gameModalInfo">In a full implementation, this game would use real probability models
+        with a built-in house edge — demonstrating why gambling is mathematically
+        designed for you to lose over time.</span>
+      </div>
+      <button class="btn btn-primary" id="gameModalOkBtn" data-i18n="gameModalOk">Got it</button>
+    </div>
+  </div>
+
+  <div id="modalsMount"></div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initSimulation);
+    } else { initSimulation(); }
+  </script>
+</body>
+</html>

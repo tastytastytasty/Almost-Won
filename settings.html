@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Almost Win - Settings" />
+  <title>Almost Win | Settings</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+</head>
+<body>
+
+  <div id="headerMount"></div>
+
+  <div class="layout-wrapper">
+    <div id="sidebarMount"></div>
+
+    <main class="main-content" id="mainContent" role="main">
+
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="bx bx-cog" aria-hidden="true"></i>
+          <span data-i18n="settingsTitle">Settings</span>
+        </h2>
+        <p class="section-subtitle" data-i18n="settingsSubtitle">Customize your Almost Win experience.</p>
+      </div>
+
+      <div class="settings-list">
+
+        <!-- Sound Effects -->
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <i class="bx bx-volume-full settings-item-icon" aria-hidden="true"></i>
+            <div>
+              <div class="settings-item-title" data-i18n="soundTitle">Sound Effects</div>
+              <div class="settings-item-desc" data-i18n="soundDesc">
+                Enable or disable audio feedback for game events and interactions.
+              </div>
+            </div>
+          </div>
+          <label class="toggle-switch" data-i18n-aria="soundTitle" aria-label="Toggle sound effects">
+            <input type="checkbox" id="soundToggle" role="switch" aria-checked="false" />
+            <span class="toggle-slider" aria-hidden="true"></span>
+          </label>
+        </div>
+
+        <!-- Animations -->
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <i class="bx bx-wind settings-item-icon" aria-hidden="true"></i>
+            <div>
+              <div class="settings-item-title" data-i18n="animTitle">Animations</div>
+              <div class="settings-item-desc" data-i18n="animDesc">
+                Enable or disable UI animations and transitions.
+              </div>
+            </div>
+          </div>
+          <label class="toggle-switch" data-i18n-aria="animTitle" aria-label="Toggle animations">
+            <input type="checkbox" id="animationsToggle" role="switch" aria-checked="true" checked />
+            <span class="toggle-slider" aria-hidden="true"></span>
+          </label>
+        </div>
+
+        <!-- Language -->
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <i class="bx bx-globe settings-item-icon" aria-hidden="true"></i>
+            <div>
+              <div class="settings-item-title" data-i18n="langTitle">Language</div>
+              <div class="settings-item-desc" data-i18n="langDesc">Switch the application language.</div>
+            </div>
+          </div>
+          <select class="lang-select settings-lang-select" aria-label="Select language">
+            <option value="en">English</option>
+            <option value="id">Bahasa Indonesia</option>
+          </select>
+        </div>
+
+        <!-- App Version -->
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <i class="bx bx-info-circle settings-item-icon" aria-hidden="true"></i>
+            <div>
+              <div class="settings-item-title" data-i18n="appVersionTitle">App Version</div>
+              <div class="settings-item-desc" data-i18n="appVersionDesc">Current release of Almost Win.</div>
+            </div>
+          </div>
+          <span class="settings-value-badge" data-i18n="version">v1.0.0-edu</span>
+        </div>
+
+      </div>
+
+      <!-- Danger Zone -->
+      <div class="section-label danger-label" data-i18n="dangerZoneLabel">Danger Zone</div>
+      <div class="danger-zone-card">
+        <div class="danger-zone-info">
+          <i class="bx bx-error" aria-hidden="true"></i>
+          <div>
+            <strong data-i18n="resetDataTitle">Reset All Data</strong>
+            <p data-i18n="resetDataDesc">This will permanently clear all wallet data, transaction history, statistics, and settings from your browser. This action cannot be undone.</p>
+          </div>
+        </div>
+        <button class="btn btn-danger" id="resetAllDataBtn">
+          <i class="bx bx-trash" aria-hidden="true"></i>
+          <span data-i18n="resetDataBtn">Reset All Data</span>
+        </button>
+      </div>
+
+    </main>
+  </div>
+
+  <div id="tabBarMount"></div>
+  <div id="modalsMount"></div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initSettings);
+    } else { initSettings(); }
+  </script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Almost Win - Educational Summary" />
+  <title>Almost Win | Learn</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+</head>
+<body>
+
+  <div id="headerMount"></div>
+
+  <div class="layout-wrapper">
+    <div id="sidebarMount"></div>
+
+    <main class="main-content" id="mainContent" role="main">
+
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="bx bx-book-open" aria-hidden="true"></i>
+          <span data-i18n="learnTitle">Educational Summary</span>
+        </h2>
+        <p class="section-subtitle" data-i18n="learnSubtitle">
+          Understanding these concepts could save you thousands of real dollars.
+        </p>
+      </div>
+
+      <div class="cards-grid three-col">
+
+        <article class="edu-card" aria-label="The House Always Wins">
+          <i class="bx bx-building-house edu-card-icon" aria-hidden="true"></i>
+          <h3 class="edu-card-title" data-i18n="edu1Title">The House Always Wins</h3>
+          <div class="edu-card-tag" data-i18n="edu1Tag">House Edge</div>
+          <p class="edu-card-body" data-i18n="edu1Body">
+            Every casino game is mathematically designed so the house keeps a percentage
+            of every bet — this is called the "house edge." Over thousands of bets,
+            this edge guarantees the casino makes money, even if individual players
+            occasionally win. No strategy can overcome a negative expected value.
+          </p>
+          <div class="edu-card-stat">
+            <span data-i18n="edu1Stat">Average House Edge:</span>
+            <span class="edu-stat-value danger-text" data-i18n="edu1StatVal">2% – 15%</span>
+          </div>
+        </article>
+
+        <article class="edu-card" aria-label="Gambler's Fallacy">
+          <i class="bx bx-brain edu-card-icon" aria-hidden="true"></i>
+          <h3 class="edu-card-title" data-i18n="edu2Title">Gambler's Fallacy</h3>
+          <div class="edu-card-tag" data-i18n="edu2Tag">Psychology</div>
+          <p class="edu-card-body" data-i18n="edu2Body">
+            The Gambler's Fallacy is the mistaken belief that past random events
+            influence future ones. If a coin lands heads 10 times in a row,
+            people believe tails is "due" — but each flip is completely independent.
+            Casinos exploit this thinking to keep players betting.
+          </p>
+          <div class="edu-card-stat">
+            <span data-i18n="edu2Stat">Reality:</span>
+            <span class="edu-stat-value accent-text" data-i18n="edu2StatVal">Each event is independent</span>
+          </div>
+        </article>
+
+        <article class="edu-card" aria-label="Sunk Cost Trap">
+          <i class="bx bx-trending-down edu-card-icon" aria-hidden="true"></i>
+          <h3 class="edu-card-title" data-i18n="edu3Title">Sunk Cost Trap</h3>
+          <div class="edu-card-tag" data-i18n="edu3Tag">Behavioral Economics</div>
+          <p class="edu-card-body" data-i18n="edu3Body">
+            The Sunk Cost Fallacy makes people continue a losing behavior because
+            they've already invested money or time. "I've lost $500, I need to win
+            it back" — this thinking leads to chasing losses and spiraling deeper
+            into debt. Money already lost is gone; continuing to play only increases losses.
+          </p>
+          <div class="edu-card-stat">
+            <span data-i18n="edu3Stat">Outcome:</span>
+            <span class="edu-stat-value danger-text" data-i18n="edu3StatVal">Deeper losses guaranteed</span>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- Info Box -->
+      <div class="info-box" role="note">
+        <i class="bx bx-bulb info-box-icon" aria-hidden="true"></i>
+        <div>
+          <strong data-i18n="infoBoxStrong">Remember:</strong>
+          <span data-i18n="infoBoxText"> The best gambling strategy is not to gamble.
+          If you or someone you know has a gambling problem, contact the
+          National Problem Gambling Helpline:</span>
+          <strong> 1-800-522-4700</strong>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div id="tabBarMount"></div>
+  <div id="modalsMount"></div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initLearn);
+    } else { initLearn(); }
+  </script>
+</body>
+</html>

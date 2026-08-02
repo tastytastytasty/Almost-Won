@@ -3,768 +3,107 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Almost Win - An educational web application simulating online gambling with virtual money to teach the reality of gambling." />
-  <title>Almost Won | Educational Gambling Simulator</title>
+  <meta name="description" content="Almost Win - Educational gambling simulator using virtual money." />
+  <title>Almost Win | Home</title>
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
 </head>
 <body>
 
-  <!-- ============================================================
-      TOP HEADER BAR
-  ============================================================ -->
-  <header class="top-header" role="banner">
-    <div class="header-left">
-      <!-- Sidebar toggle button (mobile / collapse) -->
-      <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar navigation">
-        <span class="hamburger-icon">&#9776;</span>
-      </button>
-      <!-- App Logo + Name -->
-      <div class="app-logo">
-        <span class="logo-icon" aria-hidden="true">🎰</span>
-        <span class="logo-text">Almost Won</span>
-      </div>
-    </div>
-    <div class="header-center">
-      <!-- Pulsing educational badge -->
-      <span class="edu-badge" role="status" aria-label="This is an educational application only">
-        <span class="pulse-dot" aria-hidden="true"></span>
-        EDUCATIONAL ONLY
-      </span>
-    </div>
-    <div class="header-right">
-      <!-- Current balance display -->
-      <div class="header-balance" aria-live="polite" aria-label="Current virtual balance">
-        <span class="balance-label">Balance</span>
-        <span class="balance-amount" id="headerBalance">$10,000</span>
-      </div>
-    </div>
-  </header>
+  <!-- Layout mounts (filled by layout.js) -->
+  <div id="headerMount"></div>
 
-  <!-- ============================================================
-      MAIN LAYOUT WRAPPER
-  ============================================================ -->
   <div class="layout-wrapper">
+    <div id="sidebarMount"></div>
 
-    <!-- ============================================================
-        LEFT SIDEBAR NAVIGATION
-    ============================================================ -->
-    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
-      <nav class="sidebar-nav">
-        <ul class="nav-list" role="list">
-
-          <li class="nav-item">
-            <button class="nav-btn active" data-section="home" aria-label="Navigate to Home page">
-              <span class="nav-icon" aria-hidden="true">🏠</span>
-              <span class="nav-label">Home</span>
-            </button>
-          </li>
-
-          <li class="nav-item">
-            <button class="nav-btn" data-section="wallet" aria-label="Navigate to Virtual Wallet">
-              <span class="nav-icon" aria-hidden="true">💰</span>
-              <span class="nav-label">Wallet</span>
-            </button>
-          </li>
-
-          <li class="nav-item">
-            <button class="nav-btn" data-section="simulation" aria-label="Navigate to Game Simulations">
-              <span class="nav-icon" aria-hidden="true">🎮</span>
-              <span class="nav-label">Simulate</span>
-            </button>
-          </li>
-
-          <li class="nav-item">
-            <button class="nav-btn" data-section="statistics" aria-label="Navigate to Statistics Dashboard">
-              <span class="nav-icon" aria-hidden="true">📊</span>
-              <span class="nav-label">Stats</span>
-            </button>
-          </li>
-
-          <li class="nav-item">
-            <button class="nav-btn" data-section="education" aria-label="Navigate to Educational Summary">
-              <span class="nav-icon" aria-hidden="true">📚</span>
-              <span class="nav-label">Learn</span>
-            </button>
-          </li>
-
-          <li class="nav-item">
-            <button class="nav-btn" data-section="withdraw" aria-label="Navigate to Withdraw Simulation">
-              <span class="nav-icon" aria-hidden="true">💸</span>
-              <span class="nav-label">Withdraw</span>
-            </button>
-          </li>
-
-          <li class="nav-item">
-            <button class="nav-btn" data-section="settings" aria-label="Navigate to Settings">
-              <span class="nav-icon" aria-hidden="true">⚙️</span>
-              <span class="nav-label">Settings</span>
-            </button>
-          </li>
-
-        </ul>
-      </nav>
-      <!-- Sidebar footer -->
-      <div class="sidebar-footer">
-        <span class="version-label">v1.0.0-edu</span>
-      </div>
-    </aside>
-
-    <!-- ============================================================
-        MAIN CONTENT AREA
-    ============================================================ -->
     <main class="main-content" id="mainContent" role="main">
 
-      <!-- ========================================================
-          SECTION 1: HOME PAGE
-      ======================================================== -->
-      <section class="page-section active" id="section-home" aria-labelledby="home-heading">
+      <!-- Educational Disclaimer Banner -->
+      <div class="disclaimer-banner" role="alert">
+        <i class="bx bx-error disclaimer-icon" aria-hidden="true"></i>
+        <p>
+          <strong data-i18n="disclaimerStrong">Educational Disclaimer:</strong>
+          <span data-i18n="disclaimerText"> This application uses virtual money only.
+          No real money is involved. This simulator is designed to demonstrate the psychological
+          and financial risks of gambling. Please gamble responsibly in real life.</span>
+        </p>
+      </div>
 
-        <!-- Educational Disclaimer Banner -->
-        <div class="disclaimer-banner" role="alert">
-          <span class="disclaimer-icon" aria-hidden="true">⚠️</span>
-          <p>
-            <strong>Educational Disclaimer:</strong> This application uses virtual money only.
-            No real money is involved. This simulator is designed to demonstrate the psychological
-            and financial risks of gambling. Please gamble responsibly in real life.
+      <!-- Hero Section -->
+      <section class="hero-section" aria-labelledby="home-heading">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <i class="bx bx-joystick" aria-hidden="true"></i>
+            <span data-i18n="heroBadge">🎰 Virtual Simulation</span>
+          </div>
+          <h1 class="hero-title" id="home-heading" data-i18n="heroTitle">Almost Win</h1>
+          <p class="hero-tagline" data-i18n="heroTagline">Experience the illusion. Learn the reality.</p>
+          <p class="hero-description" data-i18n="heroDesc">
+            Explore the world of gambling through a safe, educational simulation.
+            Understand why the house always wins — before it costs you real money.
           </p>
-        </div>
-
-        <!-- Hero Section -->
-        <div class="hero-section">
-          <div class="hero-content">
-            <div class="hero-badge" aria-hidden="true">🎰 Virtual Simulation</div>
-            <h1 class="hero-title" id="home-heading">Almost Won</h1>
-            <p class="hero-tagline">Experience the illusion. Learn the reality.</p>
-            <p class="hero-description">
-              Explore the world of gambling through a safe, educational simulation.
-              Understand why the house always wins — before it costs you real money.
-            </p>
-            <button class="btn btn-primary btn-glow" id="ctaButton" aria-label="Start the gambling simulation">
-              <span aria-hidden="true">🚀</span> Start Simulating
-            </button>
-          </div>
-          <div class="hero-visual" aria-hidden="true">
-            <div class="hero-emoji-stack">
-              <span class="floating-emoji e1">🎲</span>
-              <span class="floating-emoji e2">🃏</span>
-              <span class="floating-emoji e3">🎰</span>
-              <span class="floating-emoji e4">🪙</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Feature Cards Grid -->
-        <div class="section-label">Why Use Almost Won?</div>
-        <div class="cards-grid three-col">
-
-          <article class="feature-card" aria-label="Realistic Games feature">
-            <div class="card-icon" aria-hidden="true">🎮</div>
-            <h3 class="card-title">Realistic Games</h3>
-            <p class="card-desc">
-              Simulate slot machines, coin flips, and dice rolls with realistic
-              probability models — no rigging, just real odds.
-            </p>
-          </article>
-
-          <article class="feature-card" aria-label="Track Your Losses feature">
-            <div class="card-icon" aria-hidden="true">📉</div>
-            <h3 class="card-title">Track Your Losses</h3>
-            <p class="card-desc">
-              Watch your virtual balance drain over time. See the stats that
-              real gambling platforms hide from you.
-            </p>
-          </article>
-
-          <article class="feature-card" aria-label="Learn Psychology feature">
-            <div class="card-icon" aria-hidden="true">🧠</div>
-            <h3 class="card-title">Learn Psychology</h3>
-            <p class="card-desc">
-              Understand the cognitive biases and psychological traps that keep
-              people gambling long after they should stop.
-            </p>
-          </article>
-
-        </div>
-
-      </section>
-
-      <!-- ========================================================
-          SECTION 2: VIRTUAL WALLET
-      ======================================================== -->
-      <section class="page-section" id="section-wallet" aria-labelledby="wallet-heading">
-
-        <div class="section-header">
-          <h2 class="section-title" id="wallet-heading">
-            <span aria-hidden="true">💰</span> Virtual Wallet
-          </h2>
-          <p class="section-subtitle">Your virtual funds — no real money involved.</p>
-        </div>
-
-        <!-- Balance Card -->
-        <div class="wallet-balance-card">
-          <div class="balance-card-label">Current Balance</div>
-          <div class="balance-card-amount" id="walletBalance" aria-live="polite" aria-label="Current wallet balance">
-            $10,000
-          </div>
-          <div class="wallet-actions">
-            <button class="btn btn-secondary" id="addFundsBtn" aria-label="Add one thousand virtual dollars to wallet">
-              <span aria-hidden="true">➕</span> Add $1,000
-            </button>
-            <button class="btn btn-danger-outline" id="resetWalletBtn" aria-label="Reset wallet to ten thousand dollars">
-              <span aria-hidden="true">🔄</span> Reset Wallet
-            </button>
-          </div>
-        </div>
-
-        <!-- Transaction History -->
-        <div class="section-label">Transaction History</div>
-        <div class="transaction-list" id="transactionList" role="log" aria-label="Transaction history" aria-live="polite">
-          <!-- Transactions injected by JS -->
-          <div class="empty-state" id="emptyTransactions">
-            <span aria-hidden="true">📋</span>
-            <p>No transactions yet. Add funds or play a game to see history.</p>
-          </div>
-        </div>
-
-      </section>
-
-      <!-- ========================================================
-          SECTION 3: SIMULATION PAGE
-      ======================================================== -->
-      <section class="page-section" id="section-simulation" aria-labelledby="simulation-heading">
-
-        <div class="section-header">
-          <h2 class="section-title" id="simulation-heading">
-            <span aria-hidden="true">🎮</span> Game Simulations
-          </h2>
-          <p class="section-subtitle">Choose a game to simulate. All outcomes use real probability.</p>
-        </div>
-
-        <!-- Disclaimer inside simulation -->
-        <div class="info-banner">
-          <span aria-hidden="true">ℹ️</span>
-          These games simulate real gambling odds. The house edge is built in — just like real casinos.
-        </div>
-
-        <!-- Game Cards Grid -->
-        <div class="cards-grid three-col">
-
-          <article class="game-card" aria-label="Slot Machine game">
-            <div class="game-card-icon" aria-hidden="true">🎰</div>
-            <h3 class="game-card-title">Slot Machine</h3>
-            <p class="game-card-desc">
-              Spin the reels and try your luck. With a typical RTP of 85–95%,
-              the house keeps 5–15% of every spin.
-            </p>
-            <div class="game-card-stats">
-              <span class="stat-pill danger">House Edge: ~8%</span>
-              <span class="stat-pill">RTP: 92%</span>
-            </div>
-            <button class="btn btn-primary" data-game="slots" aria-label="Play Slot Machine simulation">
-              <span aria-hidden="true">▶️</span> Play
-            </button>
-          </article>
-
-          <article class="game-card" aria-label="Coin Flip game">
-            <div class="game-card-icon" aria-hidden="true">🪙</div>
-            <h3 class="game-card-title">Coin Flip</h3>
-            <p class="game-card-desc">
-              Seems like 50/50 odds — but the house takes a cut on every bet,
-              making it mathematically impossible to win long-term.
-            </p>
-            <div class="game-card-stats">
-              <span class="stat-pill danger">House Edge: ~2.7%</span>
-              <span class="stat-pill">Odds: 48.65%</span>
-            </div>
-            <button class="btn btn-primary" data-game="coinflip" aria-label="Play Coin Flip simulation">
-              <span aria-hidden="true">▶️</span> Play
-            </button>
-          </article>
-
-          <article class="game-card" aria-label="Dice Roll game">
-            <div class="game-card-icon" aria-hidden="true">🎲</div>
-            <h3 class="game-card-title">Dice Roll</h3>
-            <p class="game-card-desc">
-              Roll the dice and beat the dealer. Even with correct odds,
-              the house always tilts the math in their favor.
-            </p>
-            <div class="game-card-stats">
-              <span class="stat-pill danger">House Edge: ~1.4%</span>
-              <span class="stat-pill">Bet Types: 6</span>
-            </div>
-            <button class="btn btn-primary" data-game="dice" aria-label="Play Dice Roll simulation">
-              <span aria-hidden="true">▶️</span> Play
-            </button>
-          </article>
-
-        </div>
-
-      </section>
-
-      <!-- ========================================================
-          SECTION 4: STATISTICS DASHBOARD
-      ======================================================== -->
-      <section class="page-section" id="section-statistics" aria-labelledby="stats-heading">
-
-        <div class="section-header">
-          <h2 class="section-title" id="stats-heading">
-            <span aria-hidden="true">📊</span> Statistics Dashboard
-          </h2>
-          <p class="section-subtitle">Your gambling simulation performance at a glance.</p>
-        </div>
-
-        <!-- Main Stats Cards -->
-        <div class="cards-grid four-col">
-
-          <div class="stat-card" aria-label="Total amount wagered">
-            <div class="stat-card-icon" aria-hidden="true">💵</div>
-            <div class="stat-card-value" id="statTotalWagered" aria-live="polite">$0</div>
-            <div class="stat-card-label">Total Wagered</div>
-          </div>
-
-          <div class="stat-card danger-card" aria-label="Total amount lost">
-            <div class="stat-card-icon" aria-hidden="true">📉</div>
-            <div class="stat-card-value" id="statTotalLost" aria-live="polite">$0</div>
-            <div class="stat-card-label">Total Lost</div>
-          </div>
-
-          <div class="stat-card" aria-label="Win rate percentage">
-            <div class="stat-card-icon" aria-hidden="true">🎯</div>
-            <div class="stat-card-value" id="statWinRate" aria-live="polite">0%</div>
-            <div class="stat-card-label">Win Rate</div>
-          </div>
-
-          <div class="stat-card" aria-label="Number of sessions played">
-            <div class="stat-card-icon" aria-hidden="true">🕹️</div>
-            <div class="stat-card-value" id="statSessions" aria-live="polite">0</div>
-            <div class="stat-card-label">Sessions Played</div>
-          </div>
-
-        </div>
-
-        <!-- Biggest Win / Biggest Loss -->
-        <div class="cards-grid two-col">
-
-          <div class="stat-card highlight-win" aria-label="Biggest single win">
-            <div class="stat-card-icon" aria-hidden="true">🏆</div>
-            <div class="stat-card-value" id="statBiggestWin" aria-live="polite">$0</div>
-            <div class="stat-card-label">Biggest Win</div>
-          </div>
-
-          <div class="stat-card highlight-loss" aria-label="Biggest single loss">
-            <div class="stat-card-icon" aria-hidden="true">💀</div>
-            <div class="stat-card-value" id="statBiggestLoss" aria-live="polite">$0</div>
-            <div class="stat-card-label">Biggest Loss</div>
-          </div>
-
-        </div>
-
-        <!-- Loss Chart Placeholder -->
-        <div class="section-label">Loss Over Time</div>
-        <div class="chart-placeholder" role="img" aria-label="Loss chart placeholder - not yet implemented">
-          <div class="chart-placeholder-inner">
-            <span class="chart-icon" aria-hidden="true">📈</span>
-            <p class="chart-label">Loss Chart — Coming Soon</p>
-            <p class="chart-sublabel">
-              This chart will visualize your cumulative losses over each session,
-              demonstrating the inevitable downward trend.
-            </p>
-          </div>
-        </div>
-
-      </section>
-
-      <!-- ========================================================
-          SECTION 5: EDUCATIONAL SUMMARY
-      ======================================================== -->
-      <section class="page-section" id="section-education" aria-labelledby="education-heading">
-
-        <div class="section-header">
-          <h2 class="section-title" id="education-heading">
-            <span aria-hidden="true">📚</span> Educational Summary
-          </h2>
-          <p class="section-subtitle">
-            Understanding these concepts could save you thousands of real dollars.
-          </p>
-        </div>
-
-        <!-- Educational Cards -->
-        <div class="cards-grid three-col">
-
-          <article class="edu-card" aria-label="The House Always Wins educational card">
-            <div class="edu-card-icon" aria-hidden="true">🏛️</div>
-            <h3 class="edu-card-title">The House Always Wins</h3>
-            <div class="edu-card-tag">House Edge</div>
-            <p class="edu-card-body">
-              Every casino game is mathematically designed so the house keeps a percentage
-              of every bet — this is called the "house edge." Over thousands of bets,
-              this edge guarantees the casino makes money, even if individual players
-              occasionally win. No strategy can overcome a negative expected value.
-            </p>
-            <div class="edu-card-stat">
-              <span>Average House Edge: </span>
-              <span class="edu-stat-value danger-text">2% – 15%</span>
-            </div>
-          </article>
-
-          <article class="edu-card" aria-label="Gambler's Fallacy educational card">
-            <div class="edu-card-icon" aria-hidden="true">🧠</div>
-            <h3 class="edu-card-title">Gambler's Fallacy</h3>
-            <div class="edu-card-tag">Psychology</div>
-            <p class="edu-card-body">
-              The Gambler's Fallacy is the mistaken belief that past random events
-              influence future ones. If a coin lands heads 10 times in a row,
-              people believe tails is "due" — but each flip is completely independent.
-              Casinos exploit this thinking to keep players betting on "hot streaks"
-              and "cold streaks" that don't actually exist.
-            </p>
-            <div class="edu-card-stat">
-              <span>Reality: </span>
-              <span class="edu-stat-value accent-text">Each event is independent</span>
-            </div>
-          </article>
-
-          <article class="edu-card" aria-label="Sunk Cost Trap educational card">
-            <div class="edu-card-icon" aria-hidden="true">🕳️</div>
-            <h3 class="edu-card-title">Sunk Cost Trap</h3>
-            <div class="edu-card-tag">Behavioral Economics</div>
-            <p class="edu-card-body">
-              The Sunk Cost Fallacy makes people continue a losing behavior because
-              they've already invested money or time. "I've lost $500, I need to win
-              it back" — this thinking leads to chasing losses and spiraling deeper
-              into debt. In gambling, money already lost is gone; continuing to play
-              only increases expected losses.
-            </p>
-            <div class="edu-card-stat">
-              <span>Outcome: </span>
-              <span class="edu-stat-value danger-text">Deeper losses guaranteed</span>
-            </div>
-          </article>
-
-        </div>
-
-        <!-- Additional info box -->
-        <div class="info-box" role="note">
-          <span class="info-box-icon" aria-hidden="true">💡</span>
-          <div>
-            <strong>Remember:</strong> The best gambling strategy is not to gamble.
-            If you or someone you know has a gambling problem, contact the
-            National Problem Gambling Helpline: <strong>1-800-522-4700</strong>.
-          </div>
-        </div>
-
-      </section>
-
-      <!-- ========================================================
-          SECTION 6: WITHDRAW SIMULATION
-      ======================================================== -->
-      <section class="page-section" id="section-withdraw" aria-labelledby="withdraw-heading">
-
-        <div class="section-header">
-          <h2 class="section-title" id="withdraw-heading">
-            <span aria-hidden="true">💸</span> Withdraw Simulation
-          </h2>
-          <p class="section-subtitle">Experience the frustrating reality of casino withdrawals.</p>
-        </div>
-
-        <div class="two-col-layout">
-
-          <!-- Withdraw Form -->
-          <div class="withdraw-form-card">
-            <h3 class="form-card-title">Request Withdrawal</h3>
-            <p class="form-card-subtitle">
-              Available balance: <span id="withdrawAvailable" aria-live="polite">$10,000</span>
-            </p>
-
-            <form class="withdraw-form" id="withdrawForm" novalidate>
-
-              <div class="form-group">
-                <label for="withdrawAmount" class="form-label">
-                  Withdrawal Amount (USD)
-                </label>
-                <div class="input-wrapper">
-                  <span class="input-prefix" aria-hidden="true">$</span>
-                  <input
-                    type="number"
-                    id="withdrawAmount"
-                    class="form-input"
-                    placeholder="Enter amount..."
-                    min="1"
-                    step="1"
-                    aria-describedby="withdrawHint withdrawError"
-                  />
-                </div>
-                <p class="form-hint" id="withdrawHint">
-                  Minimum withdrawal: $1. Maximum: your current balance.
-                </p>
-                <p class="form-error hidden" id="withdrawError" role="alert" aria-live="assertive"></p>
-              </div>
-
-              <button type="submit" class="btn btn-primary btn-full" aria-label="Submit withdrawal request">
-                <span aria-hidden="true">💸</span> Request Withdrawal
-              </button>
-
-            </form>
-          </div>
-
-          <!-- Reality Check Box -->
-          <div class="reality-check-card">
-            <div class="reality-check-header">
-              <span class="reality-icon" aria-hidden="true">🚨</span>
-              <h3 class="reality-title">Reality Check</h3>
-            </div>
-            <p class="reality-intro">
-              In real online gambling platforms, withdrawals are rarely this simple.
-              Here's what actually happens:
-            </p>
-            <ul class="reality-list" role="list">
-              <li>
-                <span class="reality-bullet" aria-hidden="true">❌</span>
-                <div>
-                  <strong>Identity Verification:</strong> You must submit government ID,
-                  proof of address, and sometimes a selfie — a process that can take
-                  days or weeks.
-                </div>
-              </li>
-              <li>
-                <span class="reality-bullet" aria-hidden="true">❌</span>
-                <div>
-                  <strong>Wagering Requirements:</strong> Most bonuses come with
-                  30–50× wagering requirements. You must bet that amount before
-                  withdrawing any bonus money.
-                </div>
-              </li>
-              <li>
-                <span class="reality-bullet" aria-hidden="true">❌</span>
-                <div>
-                  <strong>Withdrawal Limits:</strong> Many casinos cap daily or weekly
-                  withdrawals at $500–$2,000, trapping large winnings in your account.
-                </div>
-              </li>
-              <li>
-                <span class="reality-bullet" aria-hidden="true">❌</span>
-                <div>
-                  <strong>Account Closure Risk:</strong> Consistently winning players
-                  often find their accounts suspended or closed without explanation.
-                </div>
-              </li>
-            </ul>
-            <div class="reality-footer">
-              <span aria-hidden="true">⚠️</span>
-              The house controls your money. Getting it back is harder than losing it.
-            </div>
-          </div>
-
-        </div>
-
-      </section>
-
-      <!-- ========================================================
-          SECTION 7: SETTINGS
-      ======================================================== -->
-      <section class="page-section" id="section-settings" aria-labelledby="settings-heading">
-
-        <div class="section-header">
-          <h2 class="section-title" id="settings-heading">
-            <span aria-hidden="true">⚙️</span> Settings
-          </h2>
-          <p class="section-subtitle">Customize your Almost Won experience.</p>
-        </div>
-
-        <!-- Settings Cards -->
-        <div class="settings-list">
-
-          <!-- Sound Effects Toggle -->
-          <div class="settings-item">
-            <div class="settings-item-info">
-              <div class="settings-item-icon" aria-hidden="true">🔊</div>
-              <div>
-                <div class="settings-item-title">Sound Effects</div>
-                <div class="settings-item-desc">
-                  Enable or disable audio feedback for game events and interactions.
-                </div>
-              </div>
-            </div>
-            <label class="toggle-switch" aria-label="Toggle sound effects">
-              <input type="checkbox" id="soundToggle" role="switch" aria-checked="false" />
-              <span class="toggle-slider" aria-hidden="true"></span>
-            </label>
-          </div>
-
-          <!-- Animations Toggle -->
-          <div class="settings-item">
-            <div class="settings-item-info">
-              <div class="settings-item-icon" aria-hidden="true">✨</div>
-              <div>
-                <div class="settings-item-title">Animations</div>
-                <div class="settings-item-desc">
-                  Enable or disable UI animations and transitions. Disable for better performance.
-                </div>
-              </div>
-            </div>
-            <label class="toggle-switch" aria-label="Toggle animations">
-              <input type="checkbox" id="animationsToggle" role="switch" aria-checked="true" checked />
-              <span class="toggle-slider" aria-hidden="true"></span>
-            </label>
-          </div>
-
-          <!-- App Version Info -->
-          <div class="settings-item">
-            <div class="settings-item-info">
-              <div class="settings-item-icon" aria-hidden="true">ℹ️</div>
-              <div>
-                <div class="settings-item-title">App Version</div>
-                <div class="settings-item-desc">Current release of Almost Won.</div>
-              </div>
-            </div>
-            <span class="settings-value-badge">v1.0.0-edu</span>
-          </div>
-
-        </div>
-
-        <!-- Danger Zone -->
-        <div class="section-label danger-label">Danger Zone</div>
-        <div class="danger-zone-card">
-          <div class="danger-zone-info">
-            <span aria-hidden="true">⚠️</span>
-            <div>
-              <strong>Reset All Data</strong>
-              <p>This will permanently clear all wallet data, transaction history, statistics, and settings from your browser. This action cannot be undone.</p>
-            </div>
-          </div>
-          <button class="btn btn-danger" id="resetAllDataBtn" aria-label="Reset all application data">
-            <span aria-hidden="true">🗑️</span> Reset All Data
+          <button class="btn btn-primary btn-glow" id="ctaButton">
+            <i class="bx bx-rocket" aria-hidden="true"></i>
+            <span data-i18n="ctaButton">Start Simulating</span>
           </button>
         </div>
-
+        <div class="hero-visual" aria-hidden="true">
+          <div class="hero-emoji-stack">
+            <span class="floating-emoji e1">🎲</span>
+            <span class="floating-emoji e2">🃏</span>
+            <span class="floating-emoji e3">🎰</span>
+            <span class="floating-emoji e4">🪙</span>
+          </div>
+        </div>
       </section>
 
+      <!-- Feature Cards -->
+      <div class="section-label" data-i18n="whyLabel">Why Use Almost Win?</div>
+      <div class="cards-grid three-col">
+
+        <article class="feature-card">
+          <i class="bx bx-joystick card-icon" aria-hidden="true"></i>
+          <h3 class="card-title" data-i18n="feat1Title">Realistic Games</h3>
+          <p class="card-desc" data-i18n="feat1Desc">
+            Simulate slot machines, coin flips, and dice rolls with realistic
+            probability models — no rigging, just real odds.
+          </p>
+        </article>
+
+        <article class="feature-card">
+          <i class="bx bx-trending-down card-icon" aria-hidden="true"></i>
+          <h3 class="card-title" data-i18n="feat2Title">Track Your Losses</h3>
+          <p class="card-desc" data-i18n="feat2Desc">
+            Watch your virtual balance drain over time. See the stats that
+            real gambling platforms hide from you.
+          </p>
+        </article>
+
+        <article class="feature-card">
+          <i class="bx bx-brain card-icon" aria-hidden="true"></i>
+          <h3 class="card-title" data-i18n="feat3Title">Learn Psychology</h3>
+          <p class="card-desc" data-i18n="feat3Desc">
+            Understand the cognitive biases and psychological traps that keep
+            people gambling long after they should stop.
+          </p>
+        </article>
+
+      </div>
+
     </main>
-    <!-- end main-content -->
-
-  </div>
-  <!-- end layout-wrapper -->
-
-  <!-- ============================================================
-      MODAL: GAME COMING SOON
-  ============================================================ -->
-  <div class="modal-overlay hidden" id="gameModal" role="dialog" aria-modal="true" aria-labelledby="gameModalTitle">
-    <div class="modal-box">
-      <button class="modal-close-btn" id="closeGameModal" aria-label="Close modal">
-        <span aria-hidden="true">✕</span>
-      </button>
-      <div class="modal-icon" aria-hidden="true">🎮</div>
-      <h2 class="modal-title" id="gameModalTitle">Game Coming Soon</h2>
-      <p class="modal-body" id="gameModalBody">
-        The game logic for <strong id="gameModalGameName">this game</strong> is not yet implemented.
-        This is a UI prototype demonstrating the structure of the application.
-      </p>
-      <div class="modal-info-box">
-        <span aria-hidden="true">💡</span>
-        In a full implementation, this game would use real probability models
-        with a built-in house edge — demonstrating why gambling is mathematically
-        designed for you to lose over time.
-      </div>
-      <button class="btn btn-primary" id="gameModalOkBtn" aria-label="Close game modal">
-        Got it
-      </button>
-    </div>
   </div>
 
-  <!-- ============================================================
-      MODAL: WITHDRAW FRICTION
-  ============================================================ -->
-  <div class="modal-overlay hidden" id="withdrawModal" role="dialog" aria-modal="true" aria-labelledby="withdrawModalTitle">
-    <div class="modal-box">
-      <button class="modal-close-btn" id="closeWithdrawModal" aria-label="Close withdrawal modal">
-        <span aria-hidden="true">✕</span>
-      </button>
-      <div class="modal-icon" aria-hidden="true">🚧</div>
-      <h2 class="modal-title" id="withdrawModalTitle">Withdrawal Under Review</h2>
-      <p class="modal-body">
-        Your withdrawal of <strong id="withdrawModalAmount">$0</strong> has been submitted
-        and is now <strong>"under review."</strong>
-      </p>
-      <div class="modal-timeline">
-        <div class="timeline-item active">
-          <span class="tl-dot" aria-hidden="true">✅</span>
-          <div><strong>Submitted</strong> — Request received</div>
-        </div>
-        <div class="timeline-item">
-          <span class="tl-dot pending" aria-hidden="true">⏳</span>
-          <div><strong>Identity Verification</strong> — Awaiting documents (2–5 days)</div>
-        </div>
-        <div class="timeline-item">
-          <span class="tl-dot pending" aria-hidden="true">⏳</span>
-          <div><strong>Compliance Review</strong> — Anti-fraud check (1–3 days)</div>
-        </div>
-        <div class="timeline-item">
-          <span class="tl-dot pending" aria-hidden="true">⏳</span>
-          <div><strong>Payment Processing</strong> — Bank transfer (3–7 days)</div>
-        </div>
-      </div>
-      <p class="modal-disclaimer">
-        This is a simulation. In real gambling platforms, this process can take
-        up to <strong>2 weeks</strong> — and your request may be denied entirely.
-      </p>
-      <button class="btn btn-primary" id="withdrawModalOkBtn" aria-label="Close withdrawal modal">
-        Understood
-      </button>
-    </div>
-  </div>
+  <div id="tabBarMount"></div>
+  <div id="modalsMount"></div>
 
-  <!-- ============================================================
-      MODAL: CONFIRMATION (generic)
-  ============================================================ -->
-  <div class="modal-overlay hidden" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
-    <div class="modal-box modal-box-sm">
-      <div class="modal-icon" aria-hidden="true">⚠️</div>
-      <h2 class="modal-title" id="confirmModalTitle">Are you sure?</h2>
-      <p class="modal-body" id="confirmModalBody">This action cannot be undone.</p>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" id="confirmModalCancel" aria-label="Cancel action">
-          Cancel
-        </button>
-        <button class="btn btn-danger" id="confirmModalConfirm" aria-label="Confirm action">
-          Confirm
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============================================================
-      TOAST NOTIFICATION CONTAINER
-  ============================================================ -->
-  <div class="toast-container" id="toastContainer" role="region" aria-label="Notifications" aria-live="polite">
-    <!-- Toasts injected by JS -->
-  </div>
-
-  <!-- ============================================================
-      MOBILE BOTTOM TAB BAR (shown on small screens)
-  ============================================================ -->
-  <nav class="bottom-tab-bar" role="navigation" aria-label="Mobile navigation">
-    <button class="tab-btn active" data-section="home" aria-label="Home">
-      <span class="tab-icon" aria-hidden="true">🏠</span>
-      <span class="tab-label">Home</span>
-    </button>
-    <button class="tab-btn" data-section="wallet" aria-label="Wallet">
-      <span class="tab-icon" aria-hidden="true">💰</span>
-      <span class="tab-label">Wallet</span>
-    </button>
-    <button class="tab-btn" data-section="simulation" aria-label="Simulate">
-      <span class="tab-icon" aria-hidden="true">🎮</span>
-      <span class="tab-label">Simulate</span>
-    </button>
-    <button class="tab-btn" data-section="education" aria-label="Learn">
-      <span class="tab-icon" aria-hidden="true">📚</span>
-      <span class="tab-label">Learn</span>
-    </button>
-    <button class="tab-btn" data-section="settings" aria-label="Settings">
-      <span class="tab-icon" aria-hidden="true">⚙️</span>
-      <span class="tab-label">Settings</span>
-    </button>
-  </nav>
-
+  <script src="js/i18n.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/layout.js"></script>
   <script src="js/script.js"></script>
+  <script>
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initHome);
+    } else { initHome(); }
+  </script>
 </body>
 </html>

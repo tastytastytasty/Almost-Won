@@ -1,5 +1,5 @@
 /* ================================================================
-  ALMOST WON — Educational Gambling Simulator
+  ALMOST WIN — Educational Gambling Simulator
   style.css — Main Stylesheet
   Version: 1.0.0-edu
    ================================================================ */
@@ -337,6 +337,7 @@ ul, ol {
   font-size: var(--font-size-sm);
   font-weight: 500;
   text-align: left;
+  text-decoration: none;
   transition:
     background var(--transition-fast),
     color var(--transition-fast),
@@ -359,10 +360,12 @@ ul, ol {
 }
 
 .nav-icon {
-  font-size: 18px;
   flex-shrink: 0;
   width: 24px;
   text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .nav-label {
@@ -675,16 +678,8 @@ ul, ol {
   max-width: 540px;
 }
 
-.hero-badge {
-  display: inline-block;
-  background: rgba(251,191,36,0.12);
-  border: 1px solid rgba(251,191,36,0.3);
-  color: var(--color-primary);
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
-  margin-bottom: var(--space-md);
+.hero-badge-placeholder {
+  /* moved to section 32 */
 }
 
 .hero-title {
@@ -768,7 +763,6 @@ ul, ol {
 }
 
 .card-icon {
-  font-size: 36px;
   margin-bottom: var(--space-md);
   display: block;
 }
@@ -950,7 +944,6 @@ ul, ol {
 }
 
 .game-card-icon {
-  font-size: 48px;
   display: block;
 }
 
@@ -1121,7 +1114,6 @@ ul, ol {
 }
 
 .edu-card-icon {
-  font-size: 40px;
   display: block;
   margin-bottom: var(--space-md);
 }
@@ -2042,4 +2034,280 @@ ul, ol {
 
 .sidebar-overlay.active {
   display: block;
+}
+
+/* ----------------------------------------------------------------
+  29. BOXICONS — Icon Sizing Helpers
+  Boxicons uses <i class="bx bx-*"> elements. We ensure they
+  render at the right size in each context.
+   ---------------------------------------------------------------- */
+
+/* Generic icon size normalization */
+.bx {
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* Logo icon */
+.logo-icon.bx {
+  font-size: 22px;
+  color: var(--color-primary);
+  filter: drop-shadow(0 0 8px rgba(251,191,36,0.6));
+}
+
+/* Sidebar nav icon */
+.nav-icon.bx {
+  font-size: 20px;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+  display: inline-block;
+}
+
+/* Bottom tab bar icon */
+.tab-icon.bx {
+  font-size: 20px;
+  display: block;
+}
+
+/* Feature/game/edu card icon */
+.card-icon.bx,
+.game-card-icon.bx,
+.edu-card-icon.bx {
+  font-size: 40px;
+  display: block;
+  margin-bottom: var(--space-md);
+}
+
+/* Stat card icon */
+.stat-card-icon.bx {
+  font-size: 32px;
+  display: block;
+  margin-bottom: var(--space-sm);
+}
+
+/* Chart icon */
+.chart-icon.bx {
+  font-size: 48px;
+  display: block;
+  margin-bottom: var(--space-md);
+  opacity: 0.5;
+}
+
+/* Toast icon */
+.toast-icon.bx {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* Disclaimer / info banner icon */
+.disclaimer-icon.bx {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.info-box-icon.bx {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* Modal icon (large, centered) */
+.modal-icon .bx {
+  font-size: 48px;
+}
+
+/* Reality check icons */
+.reality-icon.bx {
+  font-size: 26px;
+}
+
+.reality-bullet.bx {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-danger);
+}
+
+/* Timeline dot icons */
+.tl-dot.bx {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* Settings item icon */
+.settings-item-icon.bx {
+  font-size: 24px;
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+/* Danger zone icon */
+.danger-zone-info > .bx {
+  font-size: 24px;
+  flex-shrink: 0;
+  color: var(--color-danger);
+  margin-top: 2px;
+}
+
+/* Hamburger / sidebar toggle icon */
+.sidebar-toggle .bx {
+  font-size: 20px;
+  pointer-events: none;
+}
+
+/* Empty state icon */
+.empty-state > .bx {
+  font-size: 36px;
+  color: var(--color-text-dim);
+  display: block;
+  margin-bottom: var(--space-sm);
+}
+
+/* ----------------------------------------------------------------
+  30. NAV-BTN AS ANCHOR TAG
+  The nav buttons are now <a> tags. Ensure they look identical
+  to the previous button-based nav items.
+   ---------------------------------------------------------------- */
+a.nav-btn {
+  text-decoration: none;
+}
+
+a.tab-btn {
+  text-decoration: none;
+}
+
+/* app-logo as anchor */
+a.app-logo {
+  text-decoration: none;
+}
+
+/* ----------------------------------------------------------------
+  31. LANGUAGE SWITCHER
+   ---------------------------------------------------------------- */
+
+/* In the header (compact dropdown) */
+.lang-switcher-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: var(--space-md);
+}
+
+.lang-switcher-header > .bx {
+  font-size: 16px;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.lang-select {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+  appearance: none;
+  -webkit-appearance: none;
+  min-width: 42px;
+  text-align: center;
+}
+
+.lang-select:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.lang-select:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(251,191,36,0.2);
+}
+
+/* Settings page language select — full-width variant */
+.settings-lang-select {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  padding: 8px 12px;
+  cursor: pointer;
+  min-width: 160px;
+  transition: border-color var(--transition-fast);
+}
+
+.settings-lang-select:hover {
+  border-color: var(--color-primary);
+}
+
+.settings-lang-select:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(251,191,36,0.15);
+}
+
+/* ----------------------------------------------------------------
+  32. HERO BADGE — Boxicons variant
+   ---------------------------------------------------------------- */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: rgba(251,191,36,0.12);
+  border: 1px solid rgba(251,191,36,0.3);
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-md);
+}
+
+.hero-badge .bx {
+  font-size: 16px;
+}
+
+/* ----------------------------------------------------------------
+  33. MULTI-PAGE: Active page indicator adjustments
+  Since navigation is now standard <a href> links, the .active
+  class is set server-side via injectLayout(). Ensure the
+  active link style is inherited by <a> elements.
+   ---------------------------------------------------------------- */
+a.nav-btn.active,
+a.nav-btn[aria-current="page"] {
+  background: rgba(251,191,36,0.12);
+  color: var(--color-primary);
+  border-color: rgba(251,191,36,0.3);
+  font-weight: 600;
+}
+
+a.tab-btn.active,
+a.tab-btn[aria-current="page"] {
+  color: var(--color-primary);
+}
+
+/* ----------------------------------------------------------------
+  34. RESPONSIVE adjustments for language switcher
+   ---------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .lang-switcher-header {
+    margin-right: var(--space-sm);
+  }
+
+  .settings-lang-select {
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Hide lang globe icon on very small screens, keep select */
+  .lang-switcher-header > .bx {
+    display: none;
+  }
 }

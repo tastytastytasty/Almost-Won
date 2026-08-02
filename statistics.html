@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Almost Win - Statistics Dashboard" />
+  <title>Almost Win | Statistics</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+</head>
+<body>
+
+  <div id="headerMount"></div>
+
+  <div class="layout-wrapper">
+    <div id="sidebarMount"></div>
+
+    <main class="main-content" id="mainContent" role="main">
+
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="bx bx-bar-chart-alt-2" aria-hidden="true"></i>
+          <span data-i18n="statsTitle">Statistics Dashboard</span>
+        </h2>
+        <p class="section-subtitle" data-i18n="statsSubtitle">Your gambling simulation performance at a glance.</p>
+      </div>
+
+      <!-- Main Stats Grid -->
+      <div class="cards-grid four-col">
+
+        <div class="stat-card" aria-label="Total wagered">
+          <i class="bx bx-money stat-card-icon" aria-hidden="true"></i>
+          <div class="stat-card-value" id="statTotalWagered" aria-live="polite">$0</div>
+          <div class="stat-card-label" data-i18n="statWagered">Total Wagered</div>
+        </div>
+
+        <div class="stat-card danger-card" aria-label="Total lost">
+          <i class="bx bx-trending-down stat-card-icon" aria-hidden="true"></i>
+          <div class="stat-card-value" id="statTotalLost" aria-live="polite">$0</div>
+          <div class="stat-card-label" data-i18n="statLost">Total Lost</div>
+        </div>
+
+        <div class="stat-card" aria-label="Win rate">
+          <i class="bx bx-target-lock stat-card-icon" aria-hidden="true"></i>
+          <div class="stat-card-value" id="statWinRate" aria-live="polite">0%</div>
+          <div class="stat-card-label" data-i18n="statWinRate">Win Rate</div>
+        </div>
+
+        <div class="stat-card" aria-label="Sessions played">
+          <i class="bx bx-joystick stat-card-icon" aria-hidden="true"></i>
+          <div class="stat-card-value" id="statSessions" aria-live="polite">0</div>
+          <div class="stat-card-label" data-i18n="statSessions">Sessions Played</div>
+        </div>
+
+      </div>
+
+      <!-- Biggest Win / Loss -->
+      <div class="cards-grid two-col">
+
+        <div class="stat-card highlight-win" aria-label="Biggest win">
+          <i class="bx bx-trophy stat-card-icon" aria-hidden="true"></i>
+          <div class="stat-card-value" id="statBiggestWin" aria-live="polite">$0</div>
+          <div class="stat-card-label" data-i18n="statBigWin">Biggest Win</div>
+        </div>
+
+        <div class="stat-card highlight-loss" aria-label="Biggest loss">
+          <i class="bx bx-x-circle stat-card-icon" aria-hidden="true"></i>
+          <div class="stat-card-value" id="statBiggestLoss" aria-live="polite">$0</div>
+          <div class="stat-card-label" data-i18n="statBigLoss">Biggest Loss</div>
+        </div>
+
+      </div>
+
+      <!-- Chart Placeholder -->
+      <div class="section-label" data-i18n="lossChartLabel">Loss Over Time</div>
+      <div class="chart-placeholder" role="img" aria-label="Loss chart placeholder">
+        <div class="chart-placeholder-inner">
+          <i class="bx bx-line-chart chart-icon" aria-hidden="true"></i>
+          <p class="chart-label" data-i18n="chartComingSoon">Loss Chart — Coming Soon</p>
+          <p class="chart-sublabel" data-i18n="chartSubLabel">
+            This chart will visualize your cumulative losses over each session,
+            demonstrating the inevitable downward trend.
+          </p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div id="tabBarMount"></div>
+  <div id="modalsMount"></div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initStatistics);
+    } else { initStatistics(); }
+  </script>
+</body>
+</html>
