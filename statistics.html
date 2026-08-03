@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Almost Win - Statistics Dashboard" />
-  <title>Almost Win | Statistics</title>
+  <meta name="description" content="Almost Won - Statistics Dashboard" />
+  <title>Almost Won | Statistics</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
 </head>
@@ -25,62 +25,126 @@
         <p class="section-subtitle" data-i18n="statsSubtitle">Your gambling simulation performance at a glance.</p>
       </div>
 
-      <!-- Main Stats Grid -->
+      <!-- Primary Stats Grid -->
       <div class="cards-grid four-col">
-
         <div class="stat-card" aria-label="Total wagered">
           <i class="bx bx-money stat-card-icon" aria-hidden="true"></i>
           <div class="stat-card-value" id="statTotalWagered" aria-live="polite">$0</div>
           <div class="stat-card-label" data-i18n="statWagered">Total Wagered</div>
         </div>
-
         <div class="stat-card danger-card" aria-label="Total lost">
           <i class="bx bx-trending-down stat-card-icon" aria-hidden="true"></i>
           <div class="stat-card-value" id="statTotalLost" aria-live="polite">$0</div>
           <div class="stat-card-label" data-i18n="statLost">Total Lost</div>
         </div>
-
         <div class="stat-card" aria-label="Win rate">
           <i class="bx bx-target-lock stat-card-icon" aria-hidden="true"></i>
           <div class="stat-card-value" id="statWinRate" aria-live="polite">0%</div>
           <div class="stat-card-label" data-i18n="statWinRate">Win Rate</div>
         </div>
-
-        <div class="stat-card" aria-label="Sessions played">
+        <div class="stat-card" aria-label="Total spins">
           <i class="bx bx-joystick stat-card-icon" aria-hidden="true"></i>
-          <div class="stat-card-value" id="statSessions" aria-live="polite">0</div>
-          <div class="stat-card-label" data-i18n="statSessions">Sessions Played</div>
+          <div class="stat-card-value" id="statSpins" aria-live="polite">0</div>
+          <div class="stat-card-label" data-i18n="totalSpins">Total Spins</div>
         </div>
-
       </div>
 
-      <!-- Biggest Win / Loss -->
-      <div class="cards-grid two-col">
-
-        <div class="stat-card highlight-win" aria-label="Biggest win">
+      <!-- Secondary Stats Grid -->
+      <div class="cards-grid four-col">
+        <div class="stat-card highlight-win">
           <i class="bx bx-trophy stat-card-icon" aria-hidden="true"></i>
           <div class="stat-card-value" id="statBiggestWin" aria-live="polite">$0</div>
           <div class="stat-card-label" data-i18n="statBigWin">Biggest Win</div>
         </div>
-
-        <div class="stat-card highlight-loss" aria-label="Biggest loss">
+        <div class="stat-card highlight-loss">
           <i class="bx bx-x-circle stat-card-icon" aria-hidden="true"></i>
           <div class="stat-card-value" id="statBiggestLoss" aria-live="polite">$0</div>
           <div class="stat-card-label" data-i18n="statBigLoss">Biggest Loss</div>
         </div>
+        <div class="stat-card">
+          <i class="bx bx-trending-up stat-card-icon" aria-hidden="true"></i>
+          <div class="stat-card-value" id="statNetProfit" aria-live="polite">$0</div>
+          <div class="stat-card-label" data-i18n="netProfit">Net P/L</div>
+        </div>
+        <div class="stat-card">
+          <i class="bx bx-time stat-card-icon" aria-hidden="true"></i>
+          <div class="stat-card-value" id="statSessionTime" aria-live="polite">—</div>
+          <div class="stat-card-label" data-i18n="sessionTime">Session Time</div>
+        </div>
+      </div>
+
+      <!-- More Stats -->
+      <div class="cards-grid four-col">
+        <div class="stat-card">
+          <i class="bx bx-calculator stat-card-icon" aria-hidden="true"></i>
+          <div class="stat-card-value" id="statAvgBet" aria-live="polite">$0</div>
+          <div class="stat-card-label" data-i18n="avgBet">Avg Bet</div>
+        </div>
+        <div class="stat-card">
+          <i class="bx bx-pulse stat-card-icon" aria-hidden="true"></i>
+          <div class="stat-card-value" id="statRTP" aria-live="polite">0%</div>
+          <div class="stat-card-label" data-i18n="actualRTP">Actual RTP</div>
+        </div>
+        <div class="stat-card highlight-win">
+          <i class="bx bx-up-arrow-alt stat-card-icon" aria-hidden="true"></i>
+          <div class="stat-card-value" id="statWinStreak" aria-live="polite">0</div>
+          <div class="stat-card-label" data-i18n="bestWinStreak">Best Win Streak</div>
+        </div>
+        <div class="stat-card highlight-loss">
+          <i class="bx bx-down-arrow-alt stat-card-icon" aria-hidden="true"></i>
+          <div class="stat-card-value" id="statLossStreak" aria-live="polite">0</div>
+          <div class="stat-card-label" data-i18n="currentLossStreak">Loss Streak</div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="section-label" data-i18n="chartsLabel">Visual Analytics</div>
+      <div class="charts-grid">
+
+        <!-- Balance Over Time -->
+        <div class="chart-card chart-wide">
+          <div class="chart-card-header">
+            <span class="chart-card-title" data-i18n="chartBalanceTitle">Balance Over Time</span>
+            <span class="chart-card-sub" data-i18n="chartBalanceSub">Tracks every spin result</span>
+          </div>
+          <canvas id="chartBalance" class="chart-canvas chart-canvas-tall" aria-label="Balance history chart"></canvas>
+        </div>
+
+        <!-- Win / Loss Doughnut -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <span class="chart-card-title" data-i18n="chartWinLossTitle">Win vs Loss</span>
+            <span class="chart-card-sub" data-i18n="chartWinLossSub">Spin count breakdown</span>
+          </div>
+          <canvas id="chartWinLoss" class="chart-canvas" aria-label="Win loss ratio chart"></canvas>
+        </div>
+
+        <!-- Profit/Loss Trend -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <span class="chart-card-title" data-i18n="chartProfitTitle">Profit / Loss per Spin</span>
+            <span class="chart-card-sub" data-i18n="chartProfitSub">Last 40 spins</span>
+          </div>
+          <canvas id="chartProfitLoss" class="chart-canvas" aria-label="Profit loss trend chart"></canvas>
+        </div>
+
+        <!-- Bet Distribution -->
+        <div class="chart-card chart-wide">
+          <div class="chart-card-header">
+            <span class="chart-card-title" data-i18n="chartBetDistTitle">Bet Distribution</span>
+            <span class="chart-card-sub" data-i18n="chartBetDistSub">How much you bet each spin</span>
+          </div>
+          <canvas id="chartBetDist" class="chart-canvas" aria-label="Bet distribution chart"></canvas>
+        </div>
 
       </div>
 
-      <!-- Chart Placeholder -->
-      <div class="section-label" data-i18n="lossChartLabel">Loss Over Time</div>
-      <div class="chart-placeholder" role="img" aria-label="Loss chart placeholder">
-        <div class="chart-placeholder-inner">
-          <i class="bx bx-line-chart chart-icon" aria-hidden="true"></i>
-          <p class="chart-label" data-i18n="chartComingSoon">Loss Chart — Coming Soon</p>
-          <p class="chart-sublabel" data-i18n="chartSubLabel">
-            This chart will visualize your cumulative losses over each session,
-            demonstrating the inevitable downward trend.
-          </p>
+      <!-- Educational Insight -->
+      <div class="info-box" id="statsEduBox" role="note">
+        <i class="bx bx-bulb info-box-icon" aria-hidden="true"></i>
+        <div id="statsEduContent">
+          <strong data-i18n="statsEduTitle">Understanding These Numbers</strong>
+          <p data-i18n="statsEduBody">A win rate below 50% is normal in gambling. The house edge ensures that over many spins, the casino always comes out ahead — regardless of short-term results.</p>
         </div>
       </div>
 
@@ -91,6 +155,10 @@
   <div id="modalsMount"></div>
 
   <script src="js/i18n.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/education.js"></script>
+  <script src="js/charts.js"></script>
   <script src="js/shared.js"></script>
   <script src="js/layout.js"></script>
   <script src="js/script.js"></script>

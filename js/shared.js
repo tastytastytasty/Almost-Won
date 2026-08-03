@@ -1,99 +1,18 @@
 /**
  * ================================================================
- * ALMOST WIN — Shared Utilities
+ * ALMOST WON — Shared Utilities
  * js/shared.js
- * Loaded on every page. Handles: storage, toast, modal,
- * counter animation, sidebar toggle, i18n init, shared events.
+ * Loaded on every page. Relies on appState from state.js.
+ * Handles: toast, modal, counter, sidebar, balance display,
+ * settings, language switcher, shared events.
  * ================================================================
  */
-
 'use strict';
-
-/* ----------------------------------------------------------------
-  1. STORAGE KEYS & DEFAULTS
-   ---------------------------------------------------------------- */
-const STORAGE_KEYS = {
-  BALANCE:      'almostwin_balance',
-  TRANSACTIONS: 'almostwin_transactions',
-  STATS:        'almostwin_stats',
-  SETTINGS:     'almostwin_settings',
-};
-
-const DEFAULTS = {
-  BALANCE: 10000,
-  STATS: {
-    totalWagered: 0, totalLost: 0, totalWon: 0,
-    wins: 0, losses: 0, sessions: 0,
-    biggestWin: 0, biggestLoss: 0,
-  },
-  SETTINGS: { sound: false, animations: true },
-};
 
 const TOAST_DURATION = 3000;
 
 /* ----------------------------------------------------------------
-  2. SHARED APP STATE
-   ---------------------------------------------------------------- */
-const state = {
-  balance:         DEFAULTS.BALANCE,
-  transactions:    [],
-  stats:           { ...DEFAULTS.STATS },
-  settings:        { ...DEFAULTS.SETTINGS },
-  confirmCallback: null,
-};
-
-/* ----------------------------------------------------------------
-  3. STORAGE HELPERS
-   ---------------------------------------------------------------- */
-function loadFromStorage() {
-  try {
-    const b = localStorage.getItem(STORAGE_KEYS.BALANCE);
-    if (b !== null) state.balance = parseFloat(b) || DEFAULTS.BALANCE;
-
-    const tx = localStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
-    if (tx !== null) state.transactions = JSON.parse(tx) || [];
-
-    const st = localStorage.getItem(STORAGE_KEYS.STATS);
-    if (st !== null) state.stats = { ...DEFAULTS.STATS, ...JSON.parse(st) };
-
-    const se = localStorage.getItem(STORAGE_KEYS.SETTINGS);
-    if (se !== null) state.settings = { ...DEFAULTS.SETTINGS, ...JSON.parse(se) };
-  } catch (e) { console.warn('[AlmostWin] Storage load error:', e); }
-}
-
-function saveBalance() {
-  try { localStorage.setItem(STORAGE_KEYS.BALANCE, state.balance.toString()); }
-  catch (e) { /* ignore */ }
-}
-
-function saveTransactions() {
-  try {
-    const trimmed = state.transactions.slice(-50);
-    state.transactions = trimmed;
-    localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(trimmed));
-  } catch (e) { /* ignore */ }
-}
-
-function saveStats() {
-  try { localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(state.stats)); }
-  catch (e) { /* ignore */ }
-}
-
-function saveSettings() {
-  try { localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(state.settings)); }
-  catch (e) { /* ignore */ }
-}
-
-function clearAllData() {
-  Object.values(STORAGE_KEYS).forEach(k => localStorage.removeItem(k));
-  state.balance      = DEFAULTS.BALANCE;
-  state.transactions = [];
-  state.stats        = { ...DEFAULTS.STATS };
-  state.settings     = { ...DEFAULTS.SETTINGS };
-}
-
-/* ----------------------------------------------------------------
-  4. UTILITY HELPERS
+  UTILITY HELPERS
    ---------------------------------------------------------------- */
 function formatCurrency(amount) {
   return '$' + Math.abs(amount).toLocaleString('en-US', {
@@ -114,12 +33,12 @@ function clamp(value, min, max) {
 
 function escapeHtml(str) {
   const div = document.createElement('div');
-  div.appendChild(document.createTextNode(str));
+  div.appendChild(document.createTextNode(String(str)));
   return div.innerHTML;
 }
 
 /* ----------------------------------------------------------------
-  5. TOAST NOTIFICATION
+  TOAST NOTIFICATION
    ---------------------------------------------------------------- */
 function showToast(message, type = 'info') {
   const container = document.getElementById('toastContainer');
@@ -131,22 +50,21 @@ function showToast(message, type = 'info') {
     warning: 'bx-error',
     info:    'bx-info-circle',
   };
-  const iconClass = iconMap[type] || iconMap.info;
 
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
   toast.setAttribute('role', 'status');
   toast.setAttribute('aria-live', 'polite');
-  toast.innerHTML = `<i class="bx ${iconClass} toast-icon" aria-hidden="true"></i><span>${escapeHtml(message)}</span>`;
-
+  toast.innerHTML = `<i class="bx ${iconMap[type] || 'bx-info-circle'} toast-icon" aria-hidden="true"></i><span>${escapeHtml(message)}</span>`;
   container.appendChild(toast);
+
   setTimeout(() => {
     if (toast.parentNode === container) container.removeChild(toast);
   }, TOAST_DURATION + 400);
 }
 
 /* ----------------------------------------------------------------
-  6. MODAL HELPERS
+  MODAL HELPERS
    ---------------------------------------------------------------- */
 function openModal(modalId, focusSelector) {
   const modal = document.getElementById(modalId);
@@ -173,11 +91,11 @@ function handleOverlayClick(event) {
 }
 
 /* ----------------------------------------------------------------
-  7. ANIMATED COUNTER
+  ANIMATED COUNTER
    ---------------------------------------------------------------- */
 function animateCounter(element, target, duration = 600, prefix = '$') {
   if (!element) return;
-  if (!state.settings.animations) {
+  if (!appState.settings.animations) {
     element.textContent = prefix + target.toLocaleString('en-US');
     return;
   }
@@ -187,11 +105,9 @@ function animateCounter(element, target, duration = 600, prefix = '$') {
   element.dataset.rawValue = target;
 
   function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
-
   function step(now) {
     const progress = clamp((now - startTime) / duration, 0, 1);
-    const current  = Math.round(start + diff * easeOut(progress));
-    element.textContent = prefix + current.toLocaleString('en-US');
+    element.textContent = prefix + Math.round(start + diff * easeOut(progress)).toLocaleString('en-US');
     if (progress < 1) requestAnimationFrame(step);
     else element.textContent = prefix + target.toLocaleString('en-US');
   }
@@ -199,49 +115,65 @@ function animateCounter(element, target, duration = 600, prefix = '$') {
 }
 
 /* ----------------------------------------------------------------
-  8. BALANCE DISPLAY
+  BALANCE DISPLAY (syncs header, wallet page, withdraw page)
    ---------------------------------------------------------------- */
 function updateBalanceDisplay(animate = true) {
   const headerEl   = document.getElementById('headerBalance');
   const walletEl   = document.getElementById('walletBalance');
   const withdrawEl = document.getElementById('withdrawAvailable');
-  const formatted  = formatCurrency(state.balance);
+  const simEl      = document.getElementById('simBalance');
+  const lsEl       = document.getElementById('lsBalance');
+  const formatted  = formatCurrency(appState.balance);
 
   if (animate) {
-    animateCounter(headerEl, state.balance, 500);
-    animateCounter(walletEl, state.balance, 600);
+    animateCounter(headerEl, appState.balance, 500);
+    animateCounter(walletEl, appState.balance, 600);
+    animateCounter(simEl,    appState.balance, 400);
   } else {
     if (headerEl) headerEl.textContent = formatted;
     if (walletEl) walletEl.textContent = formatted;
+    if (simEl)    simEl.textContent    = formatted;
   }
   if (withdrawEl) withdrawEl.textContent = formatted;
+  if (lsEl)       lsEl.textContent      = formatted;
 }
 
 /* ----------------------------------------------------------------
-  9. SETTINGS APPLICATION
+  SETTINGS APPLICATION
    ---------------------------------------------------------------- */
 function applySettings() {
   const soundEl = document.getElementById('soundToggle');
   if (soundEl) {
-    soundEl.checked = state.settings.sound;
-    soundEl.setAttribute('aria-checked', String(state.settings.sound));
+    soundEl.checked = appState.settings.sound;
+    soundEl.setAttribute('aria-checked', String(appState.settings.sound));
   }
   const animEl = document.getElementById('animationsToggle');
   if (animEl) {
-    animEl.checked = state.settings.animations;
-    animEl.setAttribute('aria-checked', String(state.settings.animations));
+    animEl.checked = appState.settings.animations;
+    animEl.setAttribute('aria-checked', String(appState.settings.animations));
   }
-  document.body.classList.toggle('no-animations', !state.settings.animations);
+  document.body.classList.toggle('no-animations', !appState.settings.animations);
 }
 
 /* ----------------------------------------------------------------
-  10. SIDEBAR TOGGLE
+  CONFIRMATION MODAL
+   ---------------------------------------------------------------- */
+function showConfirmModal(title, body, callback) {
+  const titleEl = document.getElementById('confirmModalTitle');
+  const bodyEl  = document.getElementById('confirmModalBody');
+  if (titleEl) titleEl.textContent = title;
+  if (bodyEl)  bodyEl.textContent  = body;
+  appState.confirmCallback = callback;
+  openModal('confirmModal', '#confirmModalConfirm');
+}
+
+/* ----------------------------------------------------------------
+  SIDEBAR TOGGLE
    ---------------------------------------------------------------- */
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   const main    = document.getElementById('mainContent');
   if (!sidebar) return;
-
   if (window.innerWidth <= 768) {
     sidebar.classList.toggle('mobile-open');
     toggleSidebarOverlay(sidebar.classList.contains('mobile-open'));
@@ -275,7 +207,7 @@ function toggleSidebarOverlay(show) {
 }
 
 /* ----------------------------------------------------------------
-  11. LANGUAGE SWITCHER
+  LANGUAGE SWITCHER
    ---------------------------------------------------------------- */
 function initLanguageSwitcher() {
   document.querySelectorAll('.lang-select').forEach(select => {
@@ -283,45 +215,33 @@ function initLanguageSwitcher() {
     select.addEventListener('change', () => {
       setLanguage(select.value);
       applyTranslations();
-      // Re-render dynamic content after language switch
       if (typeof renderTransactionList === 'function') renderTransactionList();
       if (typeof updateStatsDisplay    === 'function') updateStatsDisplay();
+      if (typeof renderSpinHistory     === 'function') renderSpinHistory();
       showToast(tr('toastLangChanged'), 'info');
     });
   });
 }
 
 /* ----------------------------------------------------------------
-  12. CONFIRMATION MODAL
-   ---------------------------------------------------------------- */
-function showConfirmModal(title, body, callback) {
-  const titleEl = document.getElementById('confirmModalTitle');
-  const bodyEl  = document.getElementById('confirmModalBody');
-  if (titleEl) titleEl.textContent = title;
-  if (bodyEl)  bodyEl.textContent  = body;
-  state.confirmCallback = callback;
-  openModal('confirmModal', '#confirmModalConfirm');
-}
-
-/* ----------------------------------------------------------------
-  13. SHARED EVENT BINDINGS (present on every page)
+  SHARED EVENT BINDINGS (present on every page)
    ---------------------------------------------------------------- */
 function bindSharedEvents() {
-  // Sidebar toggle button
+  // Sidebar toggle
   const toggleBtn = document.getElementById('sidebarToggle');
   if (toggleBtn) toggleBtn.addEventListener('click', toggleSidebar);
 
-  // Escape key — close any open modal
+  // Escape → close modals
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
-    ['gameModal', 'withdrawModal', 'confirmModal'].forEach(id => {
+    ['gameModal', 'withdrawModal', 'confirmModal', 'sessionModal'].forEach(id => {
       const m = document.getElementById(id);
       if (m && !m.classList.contains('hidden')) closeModal(id);
     });
     closeMobileSidebar();
   });
 
-  // Window resize — clean up mobile sidebar state
+  // Resize → clean up mobile sidebar
   window.addEventListener('resize', () => {
     if (window.innerWidth > 768) {
       const s = document.getElementById('sidebar');
@@ -332,28 +252,26 @@ function bindSharedEvents() {
 
   // Confirm modal buttons
   const cancelBtn = document.getElementById('confirmModalCancel');
-  if (cancelBtn) {
-    cancelBtn.addEventListener('click', () => {
-      closeModal('confirmModal');
-      state.confirmCallback = null;
-    });
-  }
+  if (cancelBtn) cancelBtn.addEventListener('click', () => {
+    closeModal('confirmModal');
+    appState.confirmCallback = null;
+  });
+
   const confirmBtn = document.getElementById('confirmModalConfirm');
-  if (confirmBtn) {
-    confirmBtn.addEventListener('click', () => {
-      closeModal('confirmModal');
-      if (typeof state.confirmCallback === 'function') {
-        state.confirmCallback();
-        state.confirmCallback = null;
-      }
-    });
-  }
+  if (confirmBtn) confirmBtn.addEventListener('click', () => {
+    closeModal('confirmModal');
+    if (typeof appState.confirmCallback === 'function') {
+      appState.confirmCallback();
+      appState.confirmCallback = null;
+    }
+  });
+
   const confirmModalEl = document.getElementById('confirmModal');
   if (confirmModalEl) {
     confirmModalEl.addEventListener('click', e => {
       if (e.target === confirmModalEl) {
         closeModal('confirmModal');
-        state.confirmCallback = null;
+        appState.confirmCallback = null;
       }
     });
   }
@@ -363,16 +281,15 @@ function bindSharedEvents() {
 }
 
 /* ----------------------------------------------------------------
-  14. SHARED INIT (called on every page before page-specific init)
+  SHARED INIT — called by every page's initXxx() function
    ---------------------------------------------------------------- */
 function sharedInit() {
-  loadLanguage();        // from i18n.js
-  loadFromStorage();
+  loadLanguage();
+  loadPersistedState();
   applySettings();
   updateBalanceDisplay(false);
-  // Seed rawValue for counter
   const h = document.getElementById('headerBalance');
-  if (h) h.dataset.rawValue = state.balance;
+  if (h) h.dataset.rawValue = appState.balance;
   bindSharedEvents();
-  applyTranslations();   // from i18n.js
+  applyTranslations();
 }

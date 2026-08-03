@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Almost Win - Withdraw Simulation" />
-  <title>Almost Win | Withdraw</title>
+  <meta name="description" content="Almost Won - Withdraw Simulation" />
+  <title>Almost Won | Withdraw</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
 </head>
@@ -117,6 +117,31 @@
           </div>
         </div>
 
+      </div><!-- end two-col-layout -->
+
+      <!-- Withdraw Stats -->
+      <div class="section-label" data-i18n="withdrawStatsLabel">Your Withdrawal History</div>
+      <div class="cards-grid four-col">
+        <div class="stat-card">
+          <i class="bx bx-transfer stat-card-icon" aria-hidden="true"></i>
+          <div class="stat-card-value" id="wdAttempts">0</div>
+          <div class="stat-card-label" data-i18n="wdAttempts">Attempts</div>
+        </div>
+        <div class="stat-card">
+          <i class="bx bx-money stat-card-icon" aria-hidden="true"></i>
+          <div class="stat-card-value" id="wdTotal">$0</div>
+          <div class="stat-card-label" data-i18n="wdTotal">Total Requested</div>
+        </div>
+        <div class="stat-card highlight-win">
+          <i class="bx bx-check-circle stat-card-icon" aria-hidden="true"></i>
+          <div class="stat-card-value" id="wdSuccess">0</div>
+          <div class="stat-card-label" data-i18n="wdSuccess">Simulated</div>
+        </div>
+        <div class="stat-card highlight-loss">
+          <i class="bx bx-x-circle stat-card-icon" aria-hidden="true"></i>
+          <div class="stat-card-value" id="wdCancelled">0</div>
+          <div class="stat-card-label" data-i18n="wdCancelled">Cancelled</div>
+        </div>
       </div>
 
     </main>
@@ -178,6 +203,9 @@
   <div id="modalsMount"></div>
 
   <script src="js/i18n.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/education.js"></script>
   <script src="js/shared.js"></script>
   <script src="js/layout.js"></script>
   <script src="js/script.js"></script>

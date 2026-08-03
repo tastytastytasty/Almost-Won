@@ -1,6 +1,6 @@
 # Assets Folder
 
-This folder is reserved for future static assets used by Almost Win.
+This folder is reserved for future static assets used by Almost Won.
 
 ## Planned Assets
 

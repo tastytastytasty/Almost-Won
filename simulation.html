@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Almost Win - Game Simulations" />
-  <title>Almost Win | Simulate</title>
+  <meta name="description" content="Almost Won - Slot Machine Simulation" />
+  <title>Almost Won | Simulate</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
 </head>
@@ -22,100 +22,231 @@
           <i class="bx bx-joystick" aria-hidden="true"></i>
           <span data-i18n="simTitle">Game Simulations</span>
         </h2>
-        <p class="section-subtitle" data-i18n="simSubtitle">Choose a game to simulate. All outcomes use real probability.</p>
+        <p class="section-subtitle" data-i18n="simSubtitle">Spin the slot machine. Watch your balance drain in real time.</p>
       </div>
 
-      <div class="info-banner">
+      <!-- House Edge Banner -->
+      <div class="info-banner" id="simBanner">
         <i class="bx bx-info-circle" aria-hidden="true"></i>
         <span data-i18n="simBanner">These games simulate real gambling odds. The house edge is built in — just like real casinos.</span>
       </div>
 
-      <div class="cards-grid three-col">
+      <div class="sim-layout">
 
-        <article class="game-card" aria-label="Slot Machine game">
-          <i class="bx bx-tv game-card-icon" aria-hidden="true"></i>
-          <h3 class="game-card-title" data-i18n="slotsTitle">Slot Machine</h3>
-          <p class="game-card-desc" data-i18n="slotsDesc">
-            Spin the reels and try your luck. With a typical RTP of 85–95%,
-            the house keeps 5–15% of every spin.
-          </p>
-          <div class="game-card-stats">
-            <span class="stat-pill danger">House Edge: ~8%</span>
-            <span class="stat-pill">RTP: 92%</span>
+        <!-- LEFT: Slot Machine -->
+        <div class="slot-machine-panel">
+
+          <!-- Machine Header -->
+          <div class="machine-header">
+            <div class="machine-title">
+              <i class="bx bx-tv" aria-hidden="true"></i>
+              <span data-i18n="slotsTitle">Slot Machine</span>
+            </div>
+            <div class="machine-rtp">
+              <span class="stat-pill">RTP: 92%</span>
+              <span class="stat-pill danger" data-i18n="houseEdgeLabel">House Edge: ~8%</span>
+            </div>
           </div>
-          <button class="btn btn-primary" data-game="slots">
-            <i class="bx bx-play-circle" aria-hidden="true"></i>
-            <span data-i18n="playBtn">Play</span>
-          </button>
-        </article>
 
-        <article class="game-card" aria-label="Coin Flip game">
-          <i class="bx bx-coin game-card-icon" aria-hidden="true"></i>
-          <h3 class="game-card-title" data-i18n="coinTitle">Coin Flip</h3>
-          <p class="game-card-desc" data-i18n="coinDesc">
-            Seems like 50/50 odds — but the house takes a cut on every bet,
-            making it mathematically impossible to win long-term.
-          </p>
-          <div class="game-card-stats">
-            <span class="stat-pill danger">House Edge: ~2.7%</span>
-            <span class="stat-pill">Odds: 48.65%</span>
+          <!-- Reels Display -->
+          <div class="reels-container" id="reelsContainer" aria-label="Slot machine reels" aria-live="polite">
+            <div class="reel-window" id="reel0">
+              <div class="reel-track" id="track0">
+                <div class="reel-symbol">🍒</div>
+              </div>
+            </div>
+            <div class="reel-separator" aria-hidden="true"></div>
+            <div class="reel-window" id="reel1">
+              <div class="reel-track" id="track1">
+                <div class="reel-symbol">🍋</div>
+              </div>
+            </div>
+            <div class="reel-separator" aria-hidden="true"></div>
+            <div class="reel-window" id="reel2">
+              <div class="reel-track" id="track2">
+                <div class="reel-symbol">🍊</div>
+              </div>
+            </div>
           </div>
-          <button class="btn btn-primary" data-game="coinflip">
-            <i class="bx bx-play-circle" aria-hidden="true"></i>
-            <span data-i18n="playBtn">Play</span>
-          </button>
-        </article>
 
-        <article class="game-card" aria-label="Dice Roll game">
-          <i class="bx bx-dice-5 game-card-icon" aria-hidden="true"></i>
-          <h3 class="game-card-title" data-i18n="diceTitle">Dice Roll</h3>
-          <p class="game-card-desc" data-i18n="diceDesc">
-            Roll the dice and beat the dealer. Even with correct odds,
-            the house always tilts the math in their favor.
-          </p>
-          <div class="game-card-stats">
-            <span class="stat-pill danger">House Edge: ~1.4%</span>
-            <span class="stat-pill">Bet Types: 6</span>
+          <!-- Result Display -->
+          <div class="result-display" id="resultDisplay" aria-live="assertive">
+            <span class="result-text" id="resultText" data-i18n="resultReady">Ready to spin!</span>
           </div>
-          <button class="btn btn-primary" data-game="dice">
-            <i class="bx bx-play-circle" aria-hidden="true"></i>
-            <span data-i18n="playBtn">Play</span>
-          </button>
-        </article>
 
+          <!-- Bet Controls -->
+          <div class="bet-controls">
+            <div class="bet-label-row">
+              <span class="bet-label" data-i18n="betLabel">Bet Amount</span>
+              <span class="bet-balance-mini">
+                <span data-i18n="balanceLabel">Balance</span>:
+                <strong id="simBalance" class="balance-amount">$10,000</strong>
+              </span>
+            </div>
+
+            <!-- Preset Bet Buttons -->
+            <div class="bet-presets">
+              <button class="bet-preset-btn" data-bet="50">$50</button>
+              <button class="bet-preset-btn" data-bet="100">$100</button>
+              <button class="bet-preset-btn active" data-bet="250">$250</button>
+              <button class="bet-preset-btn" data-bet="500">$500</button>
+              <button class="bet-preset-btn" data-bet="1000">$1,000</button>
+              <button class="bet-preset-btn bet-max" id="betMaxBtn" data-i18n="betMax">MAX</button>
+            </div>
+
+            <!-- Custom Bet Input -->
+            <div class="bet-input-row">
+              <div class="input-wrapper">
+                <span class="input-prefix" aria-hidden="true">$</span>
+                <input
+                  type="number"
+                  id="betInput"
+                  class="form-input"
+                  value="250"
+                  min="1"
+                  step="1"
+                  aria-label="Custom bet amount"
+                  data-i18n-placeholder="betPlaceholder"
+                />
+              </div>
+              <button class="btn btn-secondary" id="betHalfBtn" data-i18n="betHalf">½</button>
+              <button class="btn btn-secondary" id="betDoubleBtn" data-i18n="betDouble">×2</button>
+            </div>
+
+            <!-- Insufficient balance message -->
+            <p class="bet-warning hidden" id="betWarning" role="alert" data-i18n="insufficientBalance">
+              Insufficient balance. Top up your wallet to continue.
+            </p>
+          </div>
+
+          <!-- Spin Button -->
+          <button class="btn btn-primary btn-spin" id="spinBtn" aria-label="Spin the slot machine">
+            <i class="bx bx-refresh bx-spin-hover" aria-hidden="true"></i>
+            <span id="spinBtnLabel" data-i18n="spinBtn">SPIN</span>
+          </button>
+
+          <!-- Quick Actions -->
+          <div class="sim-quick-actions">
+            <a href="wallet.html" class="btn btn-ghost btn-sm">
+              <i class="bx bx-plus-circle" aria-hidden="true"></i>
+              <span data-i18n="topUpWallet">Top Up</span>
+            </a>
+            <button class="btn btn-ghost btn-sm" id="resetSessionBtn">
+              <i class="bx bx-reset" aria-hidden="true"></i>
+              <span data-i18n="resetSession">Reset Session</span>
+            </button>
+            <a href="statistics.html" class="btn btn-ghost btn-sm">
+              <i class="bx bx-bar-chart-alt-2" aria-hidden="true"></i>
+              <span data-i18n="viewStats">Stats</span>
+            </a>
+          </div>
+
+        </div>
+
+        <!-- RIGHT: Live Stats + Educational Feed -->
+        <div class="sim-right-panel">
+
+          <!-- Live Session Stats -->
+          <div class="live-stats-card">
+            <h3 class="live-stats-title">
+              <i class="bx bx-pulse" aria-hidden="true"></i>
+              <span data-i18n="liveStatsTitle">Live Session</span>
+            </h3>
+            <div class="live-stats-grid">
+              <div class="live-stat">
+                <span class="live-stat-val" id="lsBalance">$10,000</span>
+                <span class="live-stat-lbl" data-i18n="balanceLabel">Balance</span>
+              </div>
+              <div class="live-stat">
+                <span class="live-stat-val" id="lsNetProfit">$0</span>
+                <span class="live-stat-lbl" data-i18n="netProfit">Net P/L</span>
+              </div>
+              <div class="live-stat">
+                <span class="live-stat-val" id="lsSpins">0</span>
+                <span class="live-stat-lbl" data-i18n="totalSpins">Spins</span>
+              </div>
+              <div class="live-stat">
+                <span class="live-stat-val" id="lsWinRate">0%</span>
+                <span class="live-stat-lbl" data-i18n="winRate">Win Rate</span>
+              </div>
+              <div class="live-stat">
+                <span class="live-stat-val" id="lsWinStreak">0</span>
+                <span class="live-stat-lbl" data-i18n="winStreak">Win Streak</span>
+              </div>
+              <div class="live-stat">
+                <span class="live-stat-val" id="lsSessionTime">0m 0s</span>
+                <span class="live-stat-lbl" data-i18n="sessionTime">Time</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Educational Feed -->
+          <div class="edu-feed" id="eduFeed">
+            <h3 class="edu-feed-title">
+              <i class="bx bx-bulb" aria-hidden="true"></i>
+              <span data-i18n="eduFeedTitle">Educational Insights</span>
+            </h3>
+            <div class="edu-feed-content" id="eduFeedContent">
+              <div class="edu-tip-card edu-tip-info">
+                <span class="edu-tip-icon">💡</span>
+                <div>
+                  <strong data-i18n="eduTipWelcomeTitle">Welcome to the Simulator</strong>
+                  <p data-i18n="eduTipWelcomeBody">Each spin is completely independent. Past results have zero effect on future outcomes. This is called statistical independence.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Spin History -->
+          <div class="spin-history-card">
+            <h3 class="spin-history-title">
+              <i class="bx bx-history" aria-hidden="true"></i>
+              <span data-i18n="spinHistoryTitle">Last Spins</span>
+            </h3>
+            <div class="spin-history-list" id="spinHistoryList">
+              <div class="empty-state">
+                <i class="bx bx-time-five" aria-hidden="true"></i>
+                <p data-i18n="noSpinsYet">No spins yet.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
+
+      <!-- Payout Table -->
+      <details class="payout-table-details">
+        <summary class="payout-table-summary">
+          <i class="bx bx-list-ul" aria-hidden="true"></i>
+          <span data-i18n="payoutTableTitle">Payout Table</span>
+        </summary>
+        <div class="payout-table-grid" id="payoutTable"></div>
+      </details>
 
     </main>
   </div>
 
   <div id="tabBarMount"></div>
 
-  <!-- Game Coming Soon Modal -->
-  <div class="modal-overlay hidden" id="gameModal" role="dialog" aria-modal="true" aria-labelledby="gameModalTitle">
-    <div class="modal-box">
-      <button class="modal-close-btn" id="closeGameModal" aria-label="Close modal">
+  <!-- Session Summary Modal -->
+  <div class="modal-overlay hidden" id="sessionModal" role="dialog" aria-modal="true" aria-labelledby="sessionModalTitle">
+    <div class="modal-box modal-box-wide">
+      <button class="modal-close-btn" id="closeSessionModal" aria-label="Close">
         <i class="bx bx-x" aria-hidden="true"></i>
       </button>
-      <div class="modal-icon"><i class="bx bx-joystick" aria-hidden="true"></i></div>
-      <h2 class="modal-title" id="gameModalTitle" data-i18n="gameModalTitle">Game Coming Soon</h2>
-      <p class="modal-body">
-        <span data-i18n="gameModalBody">The game logic for</span>
-        <strong id="gameModalGameName"></strong>
-        <span data-i18n="gameModalBodyEnd"> is not yet implemented. This is a UI prototype.</span>
-      </p>
-      <div class="modal-info-box">
-        <i class="bx bx-bulb" aria-hidden="true"></i>
-        <span data-i18n="gameModalInfo">In a full implementation, this game would use real probability models
-        with a built-in house edge — demonstrating why gambling is mathematically
-        designed for you to lose over time.</span>
-      </div>
-      <button class="btn btn-primary" id="gameModalOkBtn" data-i18n="gameModalOk">Got it</button>
+      <div class="modal-icon"><i class="bx bx-bar-chart-alt-2" aria-hidden="true"></i></div>
+      <h2 class="modal-title" id="sessionModalTitle" data-i18n="sessionReportTitle">Session Report</h2>
+      <div id="sessionReportContent"></div>
+      <button class="btn btn-primary" id="sessionModalOkBtn" data-i18n="sessionReportOk">Continue Playing</button>
     </div>
   </div>
 
   <div id="modalsMount"></div>
 
   <script src="js/i18n.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/education.js"></script>
   <script src="js/shared.js"></script>
   <script src="js/layout.js"></script>
   <script src="js/script.js"></script>

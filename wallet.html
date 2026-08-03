@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Almost Win - Virtual Wallet" />
-  <title>Almost Win | Wallet</title>
+  <meta name="description" content="Almost Won - Virtual Wallet" />
+  <title>Almost Won | Wallet</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
 </head>
@@ -31,14 +31,55 @@
         <div class="balance-card-amount" id="walletBalance" aria-live="polite" aria-label="Current wallet balance">
           $10,000
         </div>
-        <div class="wallet-actions">
-          <button class="btn btn-secondary" id="addFundsBtn">
+
+        <!-- Wallet Stats Row -->
+        <div class="wallet-stats-row">
+          <div class="wallet-mini-stat">
+            <span class="wallet-mini-val" id="wNetProfit">$0</span>
+            <span class="wallet-mini-lbl" data-i18n="netProfit">Net P/L</span>
+          </div>
+          <div class="wallet-mini-stat">
+            <span class="wallet-mini-val" id="wTotalBet">$0</span>
+            <span class="wallet-mini-lbl" data-i18n="statWagered">Wagered</span>
+          </div>
+          <div class="wallet-mini-stat">
+            <span class="wallet-mini-val" id="wTotalTopUp">$0</span>
+            <span class="wallet-mini-lbl" data-i18n="totalTopUp">Top-Up</span>
+          </div>
+        </div>
+
+        <!-- Preset Top-Up Buttons -->
+        <div class="section-label" style="margin-top:var(--space-lg)" data-i18n="topUpPresets">Quick Top-Up</div>
+        <div class="topup-presets">
+          <button class="topup-preset-btn" data-amount="500">+$500</button>
+          <button class="topup-preset-btn active" data-amount="1000">+$1,000</button>
+          <button class="topup-preset-btn" data-amount="2500">+$2,500</button>
+          <button class="topup-preset-btn" data-amount="5000">+$5,000</button>
+          <button class="topup-preset-btn" data-amount="10000">+$10,000</button>
+        </div>
+
+        <!-- Custom Amount -->
+        <div class="topup-custom-row">
+          <div class="input-wrapper" style="flex:1">
+            <span class="input-prefix" aria-hidden="true">$</span>
+            <input type="number" id="customTopUpInput" class="form-input"
+              data-i18n-placeholder="customAmountPlaceholder"
+              placeholder="Custom amount..." min="1" step="1" />
+          </div>
+          <button class="btn btn-secondary" id="customTopUpBtn">
             <i class="bx bx-plus-circle" aria-hidden="true"></i>
-            <span data-i18n="addFunds">Add $1,000</span>
+            <span data-i18n="addCustom">Add</span>
           </button>
+        </div>
+
+        <div class="wallet-actions" style="margin-top:var(--space-md)">
           <button class="btn btn-danger-outline" id="resetWalletBtn">
             <i class="bx bx-refresh" aria-hidden="true"></i>
             <span data-i18n="resetWallet">Reset Wallet</span>
+          </button>
+          <button class="btn btn-ghost btn-sm" id="resetSessionBtn">
+            <i class="bx bx-reset" aria-hidden="true"></i>
+            <span data-i18n="resetSession">Reset Session</span>
           </button>
         </div>
       </div>
@@ -54,6 +95,9 @@
   <div id="modalsMount"></div>
 
   <script src="js/i18n.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/education.js"></script>
   <script src="js/shared.js"></script>
   <script src="js/layout.js"></script>
   <script src="js/script.js"></script>

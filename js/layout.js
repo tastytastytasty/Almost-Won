@@ -1,6 +1,6 @@
 /**
  * ================================================================
- * ALMOST WIN — Shared Layout Injector
+ * ALMOST WON — Shared Layout Injector
  * js/layout.js
  * Injects the header, sidebar, modals, and bottom tab bar
  * into every page. Call injectLayout(activePage) once per page.
@@ -19,9 +19,9 @@ function getHeaderHTML() {
       <button class="sidebar-toggle" id="sidebarToggle" data-i18n-aria="navHome" aria-label="Toggle sidebar navigation">
         <i class="bx bx-menu" aria-hidden="true"></i>
       </button>
-      <a href="index.html" class="app-logo" aria-label="Almost Win — Home">
+      <a href="index.html" class="app-logo" aria-label="ALMOST WON — Home">
         <i class="bx bx-coin-stack logo-icon" aria-hidden="true"></i>
-        <span class="logo-text" data-i18n="appName">Almost Win</span>
+        <span class="logo-text" data-i18n="appName">Almost Won</span>
       </a>
     </div>
     <div class="header-center">
