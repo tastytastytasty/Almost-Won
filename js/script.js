@@ -278,59 +278,142 @@ function pushEduTip(tip) {
   requestAnimationFrame(() => card.classList.remove('edu-tip-new'));
 }
 
-/* -- Reel Animation -- */
+/* ----------------------------------------------------------------
+  REEL ANIMATION ENGINE
+  Uses requestAnimationFrame + scrollTop on .reel-window so the
+  browser always has a real scrollable element — no CSS transition
+  timing race conditions, works in every browser.
+
+  Each reel:
+    1. Fills its window with a long strip of random symbols ending
+       with the final result symbol.
+    2. Scrolls downward at a speed that decelerates (ease-out).
+    3. Stops one-by-one (reel 0 first, reel 2 last).
+    4. Shows the final symbol centered in the window after stopping.
+  ---------------------------------------------------------------- */
+
+/** Pixel height of one symbol cell — must match .reel-symbol CSS */
+const REEL_SYMBOL_H = 80;
+
+/** How many random symbols to prepend before the final symbol */
+const REEL_STRIP_SIZE = 24;
+
+/** Stop times in ms for each reel — sequential stagger */
+const REEL_STOP_TIMES = [1200, 1500, 1800];
+
+/**
+ * Build a DOM strip string for one reel.
+ * The LAST symbol in the strip is always the final result.
+ * @param {Object} finalSym   - result symbol object
+ * @param {number} count      - total symbols in strip
+ * @returns {string} innerHTML
+ */
+function buildReelStrip(finalSym, count) {
+  let html = '';
+  for (let i = 0; i < count - 1; i++) {
+    const s = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+    html += `<div class="reel-symbol" aria-hidden="true">${s.label}</div>`;
+  }
+  // Final symbol — visible result
+  html += `<div class="reel-symbol reel-result" data-id="${finalSym.id}">${finalSym.label}</div>`;
+  return html;
+}
+
+/**
+ * Animate all three reels, then fire callback when all have stopped.
+ *
+ * Strategy per reel:
+ *   - Set .reel-window overflow-y: scroll (temporarily).
+ *   - Fill .reel-track with REEL_STRIP_SIZE symbols.
+ *   - Instantly jump scrollTop to 0 (top = start).
+ *   - Use rAF loop to advance scrollTop with easing, simulating
+ *     a fast-then-slowing spin.
+ *   - Stop at the row that shows the final symbol.
+ *   - After all three reels complete, fire callback.
+ *
+ * @param {Array<Object>} finalReels  - [sym, sym, sym]
+ * @param {Function}      callback    - called after last reel stops
+ */
 function animateReels(finalReels, callback) {
-  const trackIds   = ['track0', 'track1', 'track2'];
-  const SPIN_ROWS  = 14;   // symbols to scroll through
-  const SYMBOL_H   = 80;   // px — must match CSS
-  const DURATIONS  = [600, 800, 1000]; // staggered stop times per reel
+  let reelsFinished = 0;
 
-  trackIds.forEach((trackId, reelIdx) => {
-    const track  = document.getElementById(trackId);
-    if (!track) return;
+  finalReels.forEach((finalSym, reelIdx) => {
+    const window_el = document.getElementById(`reel${reelIdx}`);
+    const track     = document.getElementById(`track${reelIdx}`);
+    if (!window_el || !track) { reelsFinished++; return; }
 
-    const strip  = generateReelStrip(finalReels[reelIdx], SPIN_ROWS);
-    const totalH = SYMBOL_H * (SPIN_ROWS - 1);
+    // ---- 1. Build the symbol strip ----
+    track.innerHTML = buildReelStrip(finalSym, REEL_STRIP_SIZE);
 
-    // Build DOM
-    track.style.transition = 'none';
-    track.style.transform  = 'translateY(0)';
-    track.innerHTML        = strip.map(s =>
-      `<div class="reel-symbol" data-id="${s.id}">${s.label}</div>`
-    ).join('');
+    // The final symbol sits at index (REEL_STRIP_SIZE - 1).
+    // The scrollTop that centers it = (REEL_STRIP_SIZE - 1) * REEL_SYMBOL_H
+    const finalScrollTop = (REEL_STRIP_SIZE - 1) * REEL_SYMBOL_H;
 
-    // Trigger animation after brief paint delay
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        track.style.transition = `transform ${DURATIONS[reelIdx]}ms cubic-bezier(0.17, 0.67, 0.35, 1.0)`;
-        track.style.transform  = `translateY(-${totalH}px)`;
-      });
-    });
+    // ---- 2. Enable scrolling on the window, reset to top ----
+    window_el.style.overflowY = 'scroll';
+    window_el.style.scrollBehavior = 'auto';
+    window_el.scrollTop = 0;
 
-    // After this reel stops, bounce effect
-    setTimeout(() => {
-      track.style.transition = 'transform 0.15s ease-out';
-      track.style.transform  = `translateY(-${totalH - 6}px)`;
-      setTimeout(() => {
-        track.style.transition = 'transform 0.1s ease-in';
-        track.style.transform  = `translateY(-${totalH}px)`;
-      }, 150);
-    }, DURATIONS[reelIdx]);
+    // ---- 3. rAF-driven scroll with deceleration easing ----
+    const startTime   = performance.now();
+    const stopTime    = REEL_STOP_TIMES[reelIdx]; // ms until this reel stops
+
+    // Ease-out cubic: fast start, slow finish
+    function easeOutCubic(t) {
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    function scrollStep(now) {
+      const elapsed  = now - startTime;
+      const progress = Math.min(elapsed / stopTime, 1);
+      const eased    = easeOutCubic(progress);
+
+      window_el.scrollTop = Math.round(eased * finalScrollTop);
+
+      if (progress < 1) {
+        requestAnimationFrame(scrollStep);
+      } else {
+        // ---- 4. Snap exactly to final position ----
+        window_el.scrollTop = finalScrollTop;
+
+        // ---- 5. Bounce effect: overshoot then snap back ----
+        const BOUNCE_OVERSHOOT = 10; // px
+        const BOUNCE_IN_MS     = 120;
+        const BOUNCE_OUT_MS    = 90;
+
+        window_el.style.scrollBehavior = 'smooth';
+
+        setTimeout(() => {
+          window_el.scrollTop = finalScrollTop + BOUNCE_OVERSHOOT;
+          setTimeout(() => {
+            window_el.scrollTop = finalScrollTop;
+
+            // Disable scrolling again so user can't scroll the reel
+            window_el.style.overflowY = 'hidden';
+            window_el.style.scrollBehavior = 'auto';
+
+            // ---- 6. Signal completion ----
+            reelsFinished++;
+            if (reelsFinished === 3 && typeof callback === 'function') {
+              callback();
+            }
+          }, BOUNCE_OUT_MS);
+        }, BOUNCE_IN_MS);
+      }
+    }
+
+    requestAnimationFrame(scrollStep);
   });
-
-  // All reels stopped — fire callback
-  setTimeout(callback, DURATIONS[2] + 300);
 }
 
 /* -- Win/Loss visual feedback -- */
 function showResultFeedback(resultType, label) {
-  const display  = document.getElementById('resultDisplay');
-  const textEl   = document.getElementById('resultText');
+  const display = document.getElementById('resultDisplay');
+  const textEl  = document.getElementById('resultText');
   if (!display || !textEl) return;
 
   textEl.textContent = label;
 
-  // Class mapping
   const classMap = {
     jackpot:   'result-jackpot',
     mega_win:  'result-bigwin',
@@ -342,6 +425,19 @@ function showResultFeedback(resultType, label) {
     loss:      'result-loss',
   };
   display.className = `result-display ${classMap[resultType] || 'result-loss'}`;
+
+  // Flash reel windows on a win
+  const isWin = ['jackpot','mega_win','big_win','win','small_win'].includes(resultType);
+  if (isWin) {
+    [0, 1, 2].forEach(i => {
+      const w = document.getElementById(`reel${i}`);
+      if (!w) return;
+      w.classList.remove('reel-win-flash');
+      void w.offsetWidth; // force reflow to restart animation
+      w.classList.add('reel-win-flash');
+      setTimeout(() => w.classList.remove('reel-win-flash'), 1100);
+    });
+  }
 }
 
 /* -- Main Spin Handler -- */
@@ -351,47 +447,67 @@ function handleSpin() {
 
   appState.isSpinning = true;
 
-  const spinBtn  = document.getElementById('spinBtn');
-  const spinLabel = document.getElementById('spinBtnLabel');
-  if (spinBtn)  spinBtn.disabled = true;
-  if (spinLabel) spinLabel.textContent = tr('spinningBtn');
+  const spinBtn       = document.getElementById('spinBtn');
+  const spinLabel     = document.getElementById('spinBtnLabel');
+  const resultText    = document.getElementById('resultText');
+  const resultDisplay = document.getElementById('resultDisplay');
 
-  // Show spinning state
-  const resultText = document.getElementById('resultText');
-  if (resultText) resultText.textContent = '🎰 Spinning...';
+  // --- Disable button immediately ---
+  if (spinBtn)       spinBtn.disabled = true;
+  if (spinLabel)     spinLabel.textContent = tr('spinningBtn');
+  if (resultText)    resultText.textContent = '🎰 Spinning...';
+  if (resultDisplay) resultDisplay.className = 'result-display';
 
-  // Process spin logic (deducts bet, calculates result)
+  // --- Mark reel windows as spinning ---
+  [0, 1, 2].forEach(i => {
+    const w = document.getElementById(`reel${i}`);
+    if (w) w.classList.add('spinning');
+  });
+
+  // --- Calculate result NOW (deducts bet, updates state) ---
   const result = processSpin(currentBet);
   if (!result) {
     appState.isSpinning = false;
-    if (spinBtn) spinBtn.disabled = false;
+    [0, 1, 2].forEach(i => {
+      const w = document.getElementById(`reel${i}`);
+      if (w) w.classList.remove('spinning');
+    });
+    if (spinBtn)   spinBtn.disabled = false;
     if (spinLabel) spinLabel.textContent = tr('spinBtn');
     return;
   }
 
-  // Animate reels, then show result
+  // --- Remove spinning highlight as each reel stops ---
+  REEL_STOP_TIMES.forEach((ms, i) => {
+    setTimeout(() => {
+      const w = document.getElementById(`reel${i}`);
+      if (w) w.classList.remove('spinning');
+    }, ms + 220);
+  });
+
+  // --- Run reel animation, then update all UI ---
   animateReels(result.reels, () => {
     appState.isSpinning = false;
 
-    // Update UI
+    // Show result then update everything in sequence
     showResultFeedback(result.resultType, result.label);
     updateBalanceDisplay(true);
     updateLiveStats();
     renderSpinHistory();
     validateBet();
 
-    // Push educational tip
+    // Educational tip for this spin
     if (result.eduTip) pushEduTip(result.eduTip);
 
-    // Check milestones
+    // Milestone check
     const milestone = checkMilestone(appState);
     if (milestone) showToast(milestone.message, milestone.type);
 
     // Re-enable spin button
-    if (spinBtn)  spinBtn.disabled = false;
+    if (spinBtn)   spinBtn.disabled = false;
     if (spinLabel) spinLabel.textContent = tr('spinBtn');
 
-    // Session timer
+    // Start session timer on first real spin
     if (!sessionTimerInterval) {
       sessionTimerInterval = setInterval(() => {
         const timeEl = document.getElementById('lsSessionTime');
