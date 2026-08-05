@@ -165,7 +165,6 @@ function calculatePayout(reels, bet) {
  * }}
  */
 function processSpin(bet) {
-  if (appState.isSpinning) return null;
   if (bet <= 0 || bet > appState.balance) return null;
 
   // Start session timer on first spin

@@ -465,7 +465,14 @@ function handleSpin() {
   });
 
   // --- Calculate result NOW (deducts bet, updates state) ---
-  const result = processSpin(currentBet);
+  let result;
+  try {
+    result = processSpin(currentBet);
+  } catch (err) {
+    console.error('processSpin failed:', err);
+    result = null;
+  }
+
   if (!result) {
     appState.isSpinning = false;
     [0, 1, 2].forEach(i => {
@@ -474,6 +481,7 @@ function handleSpin() {
     });
     if (spinBtn)   spinBtn.disabled = false;
     if (spinLabel) spinLabel.textContent = tr('spinBtn');
+    if (resultText) resultText.textContent = tr('resultReady') || 'Ready to spin!';
     return;
   }
 
@@ -489,23 +497,27 @@ function handleSpin() {
   animateReels(result.reels, () => {
     appState.isSpinning = false;
 
-    // Show result then update everything in sequence
-    showResultFeedback(result.resultType, result.label);
-    updateBalanceDisplay(true);
-    updateLiveStats();
-    renderSpinHistory();
-    validateBet();
+    try {
+      // Show result then update everything in sequence
+      showResultFeedback(result.resultType, result.label);
+      updateBalanceDisplay(true);
+      updateLiveStats();
+      renderSpinHistory();
+      validateBet();
 
-    // Educational tip for this spin
-    if (result.eduTip) pushEduTip(result.eduTip);
+      // Educational tip for this spin
+      if (result.eduTip) pushEduTip(result.eduTip);
 
-    // Milestone check
-    const milestone = checkMilestone(appState);
-    if (milestone) showToast(milestone.message, milestone.type);
-
-    // Re-enable spin button
-    if (spinBtn)   spinBtn.disabled = false;
-    if (spinLabel) spinLabel.textContent = tr('spinBtn');
+      // Milestone check
+      const milestone = checkMilestone(appState);
+      if (milestone) showToast(milestone.message, milestone.type);
+    } catch (err) {
+      console.error('Post-spin UI update failed:', err);
+    } finally {
+      // Re-enable spin button — ALWAYS runs, even if something above threw
+      if (spinBtn)   spinBtn.disabled = false;
+      if (spinLabel) spinLabel.textContent = tr('spinBtn');
+    }
 
     // Start session timer on first real spin
     if (!sessionTimerInterval) {
