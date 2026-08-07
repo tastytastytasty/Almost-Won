@@ -2,9 +2,25 @@
 
 This folder is reserved for future static assets used by Almost Won.
 
+## Sound Effect (SFX)
+
+Example SFX files:
+
+JACKPOT! — yiiha pvz
+MEGA WIN! — kids yelling yay
+BIG WIN! — yippy digital aids
+WIN! — victory sound
+Small Win — happy whells victory
+Near Miss + & Partial — confetti
+So Close! & No Win — vine boom
+
+Background Music
+background-music — It Don't Mean A Thing (if it Ain't Got that Swing) - Duke Ellington 8bit Jazz Version.
+
+Background music should be subtle and should not overpower UI sound effects.
+
 ## Planned Assets
 
-- `sounds/` — Optional sound effect files (click, win, lose)
 - `icons/` — Custom SVG icons or favicon files
 - `images/` — Any background textures or illustration assets
 
