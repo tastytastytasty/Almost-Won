@@ -58,6 +58,80 @@ const PAYOUTS = {
 };
 
 /* ----------------------------------------------------------------
+  OUTCOME BIAS SETTINGS
+  Tune how often "loss" spins actually get converted into a partial
+  win vs staying a flat no-win — plus a "comeback" mechanic that kicks
+  in once the player is deep in the hole.
+
+  LOSS_PARTIAL_RATIO — of every spin that would naturally be a flat
+                        loss, this fraction instead becomes a partial
+                        win (0.3x–0.5x bet back). Set to 0.8 = 80%
+                        partial / 20% stays a true no-win, per your
+                        8:2 request. This DOES raise RTP above the
+                        ~92% design target — the higher this is, the
+                        closer the house edge gets to zero.
+  NO_WIN_NEAR_MISS_SHARE — of that remaining 20% "no win" slice, this
+                        fraction gets the near-miss visual (two
+                        matching symbols) instead of a flat unrelated
+                        loss. Purely cosmetic — near-miss still pays 0.
+   ---------------------------------------------------------------- */
+const LOSS_PARTIAL_RATIO     = 0.8;  // 80% of losses -> partial win
+const NO_WIN_NEAR_MISS_SHARE = 0.5;  // half of the remaining 20% -> near-miss flavor
+
+/* ----------------------------------------------------------------
+  COMEBACK / RUBBER-BAND MECHANIC
+  ⚠️ This reproduces a real dark pattern used by some predatory
+  gambling apps: secretly boost payouts once a player's balance has
+  dropped far enough, just enough to keep them hopeful — while making
+  sure they never actually recover to where they started. It's built
+  here so the effect can be studied/demonstrated, not as something to
+  ship in a real product.
+
+  COMEBACK_TRIGGER_RATIO  — "help" kicks in once balance <= this
+                             fraction of initialBalance (0.5 = 50%).
+  COMEBACK_CAP_RATIO      — balance is never boosted above this
+                             fraction of initialBalance (0.9 = 90%).
+  COMEBACK_RECOVERY_RATIO — of the current deficit (initialBalance -
+                             balance), hand back this fraction. Player
+                             stays net-negative, just less painfully.
+                             e.g. down 20.000, ratio 0.5 -> given back
+                             10.000 -> still down 10.000 net.
+   ---------------------------------------------------------------- */
+const COMEBACK_TRIGGER_RATIO  = 0.5;
+const COMEBACK_CAP_RATIO      = 0.9;
+const COMEBACK_RECOVERY_RATIO = 0.5;
+
+/* ----------------------------------------------------------------
+  DEBUG / TESTING ONLY
+  Set this from the browser console to force every spin to a specific
+  result — handy for testing sounds/animations without waiting on
+  real odds. Does NOT touch the actual probability weights above,
+  so real gameplay odds stay accurate as long as this is null.
+
+  Usage in DevTools console:
+    DEBUG_FORCE_RESULT = 'jackpot'   // force jackpot every spin
+    DEBUG_FORCE_RESULT = null        // back to normal random odds
+  Valid values: 'jackpot' | 'mega_win' | 'big_win' | 'win' | 'small_win'
+              | 'partial' | 'near_miss' | 'loss'
+   ---------------------------------------------------------------- */
+window.DEBUG_FORCE_RESULT = null;
+
+function getDebugReels(type) {
+  const sym = id => SYMBOLS.find(s => s.id === id);
+  const map = {
+    jackpot:   [sym('diamond'), sym('diamond'), sym('diamond')], // mult 50
+    mega_win:  [sym('star'),    sym('star'),    sym('star')],    // mult 25
+    big_win:   [sym('seven'),   sym('seven'),   sym('seven')],   // mult 15
+    win:       [sym('bar'),     sym('bar'),     sym('bar')],     // mult 8
+    small_win: [sym('cherry'),  sym('cherry'),  sym('cherry')],  // mult 2
+    partial:   [sym('cherry'),  sym('cherry'),  sym('lemon')],   // mult 0.5
+    near_miss: [sym('seven'),   sym('seven'),   sym('star')],
+    loss:      [sym('cherry'),  sym('lemon'),   sym('bell')],
+  };
+  return map[type] || null;
+}
+
+/* ----------------------------------------------------------------
   RANDOM ENGINE
    ---------------------------------------------------------------- */
 
@@ -81,16 +155,53 @@ function pickSymbol() {
  * @returns {Array<Object>} [reel0, reel1, reel2]
  */
 function generateReels() {
-  // ~12% near-miss bias: force first two reels to match high-value symbol
-  if (Math.random() < 0.12) {
+  // DEBUG override — see DEBUG_FORCE_RESULT above
+  if (window.DEBUG_FORCE_RESULT) {
+    const forced = getDebugReels(window.DEBUG_FORCE_RESULT);
+    if (forced) return forced;
+  }
+
+  // Always roll the genuine random result FIRST. This guarantees real
+  // win odds (small_win, win, big_win, mega_win, jackpot) are never
+  // reduced by the bias below — a spin that would have won stays a win.
+  const natural = [pickSymbol(), pickSymbol(), pickSymbol()];
+
+  // Only "flavor" the result if it would have been a flat, boring loss.
+  // We never override a spin that was already going to win or already
+  // naturally landed on near_miss/partial.
+  const naturalCheck = calculatePayout(natural, 0);
+  if (naturalCheck.resultType !== 'loss') return natural;
+
+  const roll = Math.random();
+
+  // 80% of losses -> forced partial (two cherries + one other symbol,
+  // random position). Actually pays out — see LOSS_PARTIAL_RATIO comment.
+  if (roll < LOSS_PARTIAL_RATIO) {
+    const cherry = SYMBOLS.find(s => s.id === 'cherry');
+    const others = SYMBOLS.filter(s => s.id !== 'cherry');
+    const other  = others[Math.floor(Math.random() * others.length)];
+    const patterns = [
+      [cherry, cherry, other],
+      [cherry, other, cherry],
+      [other, cherry, cherry],
+    ];
+    return patterns[Math.floor(Math.random() * patterns.length)];
+  }
+
+  // Of the remaining 20%, half get the near-miss visual flavor (pays 0,
+  // purely cosmetic), half stay a completely flat, unrelated no-win.
+  const noWinSliceStart = LOSS_PARTIAL_RATIO;
+  const nearMissEnd     = noWinSliceStart + (1 - LOSS_PARTIAL_RATIO) * NO_WIN_NEAR_MISS_SHARE;
+  if (roll < nearMissEnd) {
     const highSyms = SYMBOLS.filter(s => s.weight <= 10);
     const base     = highSyms[Math.floor(Math.random() * highSyms.length)];
-    // Third reel: pick adjacent symbol index (not the same)
     const idx      = SYMBOLS.indexOf(base);
     const nearIdx  = idx > 0 ? idx - 1 : idx + 1;
     return [base, base, SYMBOLS[nearIdx]];
   }
-  return [pickSymbol(), pickSymbol(), pickSymbol()];
+
+  // Otherwise leave the natural loss as-is.
+  return natural;
 }
 
 /* ----------------------------------------------------------------
@@ -144,6 +255,43 @@ function calculatePayout(reels, bet) {
   return { multiplier: 0, payout: 0, resultType: 'loss', label: '❌ No Win' };
 }
 
+/**
+ * Comeback / rubber-band mechanic — see the constants block above for
+ * the full explanation. Mutates `reels` in place (to keep the visual
+ * symbols consistent with the boosted payout) and returns a possibly
+ *-overridden result object. Leaves `result` untouched if conditions
+ * aren't met.
+ * @param {Array<Object>} reels  - the reel symbols for this spin (mutated if triggered)
+ * @param {Object}        result - output of calculatePayout()
+ * @param {number}         bet
+ * @returns {Object} result (same shape as calculatePayout's return)
+ */
+function applyComebackMechanic(reels, result, bet) {
+  const triggerLevel = appState.initialBalance * COMEBACK_TRIGGER_RATIO;
+  const capLevel      = appState.initialBalance * COMEBACK_CAP_RATIO;
+
+  if (appState.balance > triggerLevel) return result;   // not deep enough in the hole yet
+  if (result.payout > bet)             return result;   // this spin already won net-positive, leave it
+  if (appState.balance >= capLevel)    return result;   // already near the cap, don't push further
+
+  const deficit       = appState.initialBalance - appState.balance;
+  const targetRecover = Math.round(deficit * COMEBACK_RECOVERY_RATIO);
+  const roomUnderCap  = Math.round(capLevel - appState.balance);
+  const grantPayout   = Math.min(targetRecover, roomUnderCap);
+
+  if (grantPayout <= result.payout) return result; // nothing meaningful to add
+
+  const cherry = SYMBOLS.find(s => s.id === 'cherry');
+  reels[0] = cherry; reels[1] = cherry; reels[2] = cherry; // visually match the win
+
+  return {
+    multiplier: +(grantPayout / bet).toFixed(2),
+    payout:     grantPayout,
+    resultType: 'small_win',
+    label:      '👍 Small Win',
+  };
+}
+
 /* ----------------------------------------------------------------
   SPIN PROCESSOR
   The main function called by the UI.
@@ -179,7 +327,8 @@ function processSpin(bet) {
 
   // Generate result
   const reels  = generateReels();
-  const result = calculatePayout(reels, bet);
+  let result = calculatePayout(reels, bet);
+  result = applyComebackMechanic(reels, result, bet); // may boost payout + swap reels to cherries
   const payout = result.payout;
   const net    = payout - bet; // net change (negative = loss, positive = win)
 

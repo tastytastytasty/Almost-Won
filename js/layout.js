@@ -64,7 +64,7 @@ function getSidebarHTML(activePage) {
   const items = pages.map(p => `
     <li class="nav-item">
       <a href="${p.href}" class="nav-btn${activePage === p.key ? ' active' : ''}"
-         data-i18n-aria="${p.labelKey}" aria-label="${p.labelKey}" aria-current="${activePage === p.key ? 'page' : 'false'}">
+        data-i18n-aria="${p.labelKey}" aria-label="${p.labelKey}" aria-current="${activePage === p.key ? 'page' : 'false'}">
         <i class="bx ${p.icon} nav-icon" aria-hidden="true"></i>
         <span class="nav-label" data-i18n="${p.labelKey}">${p.labelKey}</span>
       </a>
@@ -96,7 +96,7 @@ function getTabBarHTML(activePage) {
 
   const items = tabs.map(t => `
     <a href="${t.href}" class="tab-btn${activePage === t.key ? ' active' : ''}"
-       aria-label="${t.labelKey}" aria-current="${activePage === t.key ? 'page' : 'false'}">
+      aria-label="${t.labelKey}" aria-current="${activePage === t.key ? 'page' : 'false'}">
       <i class="bx ${t.icon} tab-icon" aria-hidden="true"></i>
       <span class="tab-label" data-i18n="${t.labelKey}">${t.labelKey}</span>
     </a>`).join('');
@@ -113,7 +113,7 @@ function getSharedModalsHTML() {
   <!-- Confirmation Modal -->
   <div class="modal-overlay hidden" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
     <div class="modal-box modal-box-sm">
-      <div class="modal-icon"><i class="bx bx-error-circle" aria-hidden="true"></i></div>
+      <div class="modal-icon"><i class="bx bx-error-circle card-icon" aria-hidden="true"></i></div>
       <h2 class="modal-title" id="confirmModalTitle" data-i18n="confirmTitle">Are you sure?</h2>
       <p class="modal-body" id="confirmModalBody" data-i18n="confirmBody">This action cannot be undone.</p>
       <div class="modal-actions">

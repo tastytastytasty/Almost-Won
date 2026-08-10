@@ -292,4 +292,5 @@ function sharedInit() {
   if (h) h.dataset.rawValue = appState.balance;
   bindSharedEvents();
   applyTranslations();
+  if (typeof AudioSystem !== 'undefined') AudioSystem.init();
 }

@@ -50,8 +50,10 @@ const STATE_DEFAULTS = {
 };
 
 const SETTINGS_DEFAULTS = {
-  sound:      false,
-  animations: true,
+  sound:           false,
+  animations:      true,
+  soundEffects:    true,   // Spin result sound — ON by default
+  backgroundMusic: true,   // Background music   — ON by default
 };
 
 /* ----------------------------------------------------------------

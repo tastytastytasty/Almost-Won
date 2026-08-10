@@ -286,7 +286,7 @@ function pushEduTip(tip) {
 
   Each reel:
     1. Fills its window with a long strip of random symbols ending
-      with the final result symbol.
+       with the final result symbol.
     2. Scrolls downward at a speed that decelerates (ease-out).
     3. Stops one-by-one (reel 0 first, reel 2 last).
     4. Shows the final symbol centered in the window after stopping.
@@ -500,6 +500,7 @@ function handleSpin() {
     try {
       // Show result then update everything in sequence
       showResultFeedback(result.resultType, result.label);
+      if (typeof AudioSystem !== 'undefined') AudioSystem.playSpinResult(result.resultType);
       updateBalanceDisplay(true);
       updateLiveStats();
       renderSpinHistory();

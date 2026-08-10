@@ -840,6 +840,7 @@ ol {
 .card-icon {
   margin-bottom: var(--space-md);
   display: block;
+  color: var(--color-text);
 }
 
 .card-title {
@@ -968,10 +969,12 @@ ol {
 
 .transaction-icon.income {
   background: rgba(16, 185, 129, 0.15);
+  color:  rgba(16, 185, 129);
 }
 
 .transaction-icon.expense {
   background: rgba(239, 68, 68, 0.15);
+  color:  rgba(239, 68, 68);
 }
 
 .transaction-desc {
@@ -1025,6 +1028,7 @@ ol {
 
 .game-card-icon {
   display: block;
+  color: var(--color-text);
 }
 
 .game-card-title {
@@ -1086,6 +1090,7 @@ ol {
   font-size: 32px;
   display: block;
   margin-bottom: var(--space-sm);
+  color: var(--color-text);
 }
 
 .stat-card-value {
@@ -1196,6 +1201,7 @@ ol {
 .edu-card-icon {
   display: block;
   margin-bottom: var(--space-md);
+  color: var(--color-text);
 }
 
 .edu-card-title {
@@ -1365,6 +1371,7 @@ ol {
 
 .reality-icon {
   font-size: 24px;
+  color: var(--color-danger);
 }
 
 .reality-title {
@@ -2189,6 +2196,7 @@ ol {
   font-size: 40px;
   display: block;
   margin-bottom: var(--space-md);
+  color: var(--color-text);
 }
 
 /* Stat card icon */
@@ -2196,6 +2204,7 @@ ol {
   font-size: 32px;
   display: block;
   margin-bottom: var(--space-sm);
+  color: var(--color-text);
 }
 
 /* Chart icon */

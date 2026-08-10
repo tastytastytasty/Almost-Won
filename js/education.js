@@ -256,7 +256,7 @@ function getContextualLearnCards(s) {
 
   if (s.spins > 0) {
     cards.push({
-      icon:    '📊',
+      icon:    '<i class="bx bx-bar-chart-square edu-card-icon" aria-hidden="true"></i>',
       title:   tr('ctxCardYourRTPTitle'),
       tag:     tr('edu1Tag'),
       body:    tr('ctxCardYourRTPBody')
@@ -270,7 +270,7 @@ function getContextualLearnCards(s) {
 
   if (s.currentLossStreak > 0) {
     cards.push({
-      icon:    '🔄',
+      icon:    '<i class="bx bx-refresh edu-card-icon" aria-hidden="true"></i>',
       title:   tr('ctxCardStreakTitle'),
       tag:     tr('edu2Tag'),
       body:    tr('ctxCardStreakBody').replace('{n}', s.currentLossStreak),
@@ -283,7 +283,7 @@ function getContextualLearnCards(s) {
   if (s.totalTopUp > 0) {
     const costRate = Math.round((s.totalTopUp / (s.initialBalance + s.totalTopUp)) * 100);
     cards.push({
-      icon:    '💰',
+      icon:    '<i class="bx bx-credit-card edu-card-icon" aria-hidden="true"></i>',
       title:   tr('ctxCardTopUpTitle'),
       tag:     tr('edu3Tag'),
       body:    tr('ctxCardTopUpBody').replace('{topup}', formatCurrency(s.totalTopUp)),
