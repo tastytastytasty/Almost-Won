@@ -452,40 +452,39 @@ function handleSpin() {
   const resultText    = document.getElementById('resultText');
   const resultDisplay = document.getElementById('resultDisplay');
 
-  // --- Disable button immediately ---
+  // ── 1. Disable spin button immediately ────────────────────────
   if (spinBtn)       spinBtn.disabled = true;
   if (spinLabel)     spinLabel.textContent = tr('spinningBtn');
   if (resultText)    resultText.textContent = '🎰 Spinning...';
   if (resultDisplay) resultDisplay.className = 'result-display';
 
-  // --- Mark reel windows as spinning ---
+  // ── 2. Phase 1 — deduct bet, calculate result (no payout yet) ─
+  let pending;
+  try {
+    pending = deductBet(currentBet);
+  } catch (err) {
+    console.error('deductBet failed:', err);
+    pending = null;
+  }
+
+  if (!pending) {
+    appState.isSpinning = false;
+    if (spinBtn)    spinBtn.disabled = false;
+    if (spinLabel)  spinLabel.textContent = tr('spinBtn');
+    if (resultText) resultText.textContent = tr('resultReady') || 'Ready to spin!';
+    return;
+  }
+
+  // ── 3. Animate balance DECREASING by bet (before reels start) ─
+  updateBalanceDisplay(true);  // appState.balance is already post-bet here
+
+  // ── 4. Mark reel windows as spinning ──────────────────────────
   [0, 1, 2].forEach(i => {
     const w = document.getElementById(`reel${i}`);
     if (w) w.classList.add('spinning');
   });
 
-  // --- Calculate result NOW (deducts bet, updates state) ---
-  let result;
-  try {
-    result = processSpin(currentBet);
-  } catch (err) {
-    console.error('processSpin failed:', err);
-    result = null;
-  }
-
-  if (!result) {
-    appState.isSpinning = false;
-    [0, 1, 2].forEach(i => {
-      const w = document.getElementById(`reel${i}`);
-      if (w) w.classList.remove('spinning');
-    });
-    if (spinBtn)   spinBtn.disabled = false;
-    if (spinLabel) spinLabel.textContent = tr('spinBtn');
-    if (resultText) resultText.textContent = tr('resultReady') || 'Ready to spin!';
-    return;
-  }
-
-  // --- Remove spinning highlight as each reel stops ---
+  // ── 5. Remove spinning highlight as each reel stops ───────────
   REEL_STOP_TIMES.forEach((ms, i) => {
     setTimeout(() => {
       const w = document.getElementById(`reel${i}`);
@@ -493,15 +492,41 @@ function handleSpin() {
     }, ms + 220);
   });
 
-  // --- Run reel animation, then update all UI ---
-  animateReels(result.reels, () => {
+  // ── 6. Reel animation — callback fires after all 3 stop ───────
+  animateReels(pending.reels, () => {
+    // ── 7. Phase 2 — apply payout, update all state ─────────────
+    let result;
+    try {
+      result = applySpinResult(pending);
+    } catch (err) {
+      console.error('applySpinResult failed:', err);
+      // Recover: re-enable button and bail
+      appState.isSpinning = false;
+      if (spinBtn)    spinBtn.disabled = false;
+      if (spinLabel)  spinLabel.textContent = tr('spinBtn');
+      return;
+    }
+
     appState.isSpinning = false;
 
     try {
-      // Show result then update everything in sequence
+      // ── 8. Show result label + reel flash ──────────────────────
       showResultFeedback(result.resultType, result.label);
-      if (typeof AudioSystem !== 'undefined') AudioSystem.playSpinResult(result.resultType);
-      updateBalanceDisplay(true);
+
+      // ── 9. Animate balance INCREASING by payout (wins only) ────
+      //       For no-win / near-miss payout === 0, so the display
+      //       already shows the correct post-bet balance — no second
+      //       animation needed.
+      if (result.payout > 0) {
+        updateBalanceDisplay(true);
+      }
+
+      // ── 10. Play result sound (respects soundEffects setting) ──
+      if (typeof AudioSystem !== 'undefined') {
+        AudioSystem.playSpinResult(result.resultType);
+      }
+
+      // ── 11. Update live stats + history ────────────────────────
       updateLiveStats();
       renderSpinHistory();
       validateBet();
@@ -515,9 +540,9 @@ function handleSpin() {
     } catch (err) {
       console.error('Post-spin UI update failed:', err);
     } finally {
-      // Re-enable spin button — ALWAYS runs, even if something above threw
-      if (spinBtn)   spinBtn.disabled = false;
-      if (spinLabel) spinLabel.textContent = tr('spinBtn');
+      // Re-enable spin button — always runs even if something above threw
+      if (spinBtn)    spinBtn.disabled = false;
+      if (spinLabel)  spinLabel.textContent = tr('spinBtn');
     }
 
     // Start session timer on first real spin
@@ -824,34 +849,71 @@ function initSettings() {
   injectLayout('settings');
   sharedInit();
 
+  // ── Sound Effects toggle ──────────────────────────────────────
+  // Controls appState.settings.soundEffects (spin result sounds).
   const soundEl = document.getElementById('soundToggle');
-  if (soundEl) soundEl.addEventListener('change', () => {
-    appState.settings.sound = soundEl.checked;
-    soundEl.setAttribute('aria-checked', String(soundEl.checked));
-    persistSettings();
-    showToast(tr(soundEl.checked ? 'toastSoundOn' : 'toastSoundOff'), 'info');
-  });
-
-  const animEl = document.getElementById('animationsToggle');
-  if (animEl) animEl.addEventListener('change', () => {
-    appState.settings.animations = animEl.checked;
-    animEl.setAttribute('aria-checked', String(animEl.checked));
-    persistSettings();
-    applySettings();
-    showToast(tr(animEl.checked ? 'toastAnimOn' : 'toastAnimOff'), 'info');
-  });
-
-  const resetBtn = document.getElementById('resetAllDataBtn');
-  if (resetBtn) resetBtn.addEventListener('click', () => {
-    showConfirmModal(
-      tr('confirmResetDataTitle'),
-      tr('confirmResetDataBody'),
-      () => {
-        resetAllAppState();
-        applySettings();
-        updateBalanceDisplay(false);
-        showToast(tr('toastDataReset'), 'warning');
+  if (soundEl) {
+    soundEl.addEventListener('change', () => {
+      const enabled = soundEl.checked;
+      soundEl.setAttribute('aria-checked', String(enabled));
+      // setSoundEffects updates appState.settings.soundEffects + persists
+      if (typeof AudioSystem !== 'undefined') {
+        AudioSystem.setSoundEffects(enabled);
+      } else {
+        appState.settings.soundEffects = enabled;
+        persistSettings();
       }
-    );
-  });
+      showToast(tr(enabled ? 'toastSoundOn' : 'toastSoundOff'), 'info');
+    });
+  }
+
+  // ── Background Music toggle ───────────────────────────────────
+  // Controls appState.settings.backgroundMusic.
+  const bgmEl = document.getElementById('bgmToggle');
+  if (bgmEl) {
+    bgmEl.addEventListener('change', () => {
+      const enabled = bgmEl.checked;
+      bgmEl.setAttribute('aria-checked', String(enabled));
+      // setBgm updates appState.settings.backgroundMusic, persists,
+      // and immediately starts/stops the music.
+      if (typeof AudioSystem !== 'undefined') {
+        AudioSystem.setBgm(enabled);
+      } else {
+        appState.settings.backgroundMusic = enabled;
+        persistSettings();
+      }
+      showToast(tr(enabled ? 'toastBgmOn' : 'toastBgmOff'), 'info');
+    });
+  }
+
+  // ── Animations toggle ─────────────────────────────────────────
+  const animEl = document.getElementById('animationsToggle');
+  if (animEl) {
+    animEl.addEventListener('change', () => {
+      appState.settings.animations = animEl.checked;
+      animEl.setAttribute('aria-checked', String(animEl.checked));
+      persistSettings();
+      applySettings();
+      showToast(tr(animEl.checked ? 'toastAnimOn' : 'toastAnimOff'), 'info');
+    });
+  }
+
+  // ── Reset All Data ────────────────────────────────────────────
+  const resetBtn = document.getElementById('resetAllDataBtn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      showConfirmModal(
+        tr('confirmResetDataTitle'),
+        tr('confirmResetDataBody'),
+        () => {
+          resetAllAppState();
+          applySettings();
+          updateBalanceDisplay(false);
+          // Re-apply BGM state after reset (defaults back to ON)
+          if (typeof AudioSystem !== 'undefined') AudioSystem.applyBgm();
+          showToast(tr('toastDataReset'), 'warning');
+        }
+      );
+    });
+  }
 }

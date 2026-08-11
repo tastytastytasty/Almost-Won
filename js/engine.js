@@ -293,26 +293,31 @@ function applyComebackMechanic(reels, result, bet) {
 }
 
 /* ----------------------------------------------------------------
-  SPIN PROCESSOR
-  The main function called by the UI.
-  Updates appState, records history, returns result object.
+  SPIN PROCESSOR — TWO-PHASE API
+  Phase 1: deductBet(bet)
+    - Validates balance, deducts bet, updates counters, starts timer.
+    - Returns a "pending" result object with the reel symbols and
+      pre-calculated payout — but does NOT yet apply the payout to
+      appState.balance or record any transactions.
+    - Call this BEFORE starting the reel animation so the balance
+      display can animate down immediately.
+
+  Phase 2: applySpinResult(pending)
+    - Receives the object returned by deductBet().
+    - Applies the payout to appState.balance.
+    - Updates all counters, records history + transactions, persists.
+    - Call this AFTER the reel animation has finished.
+
+  Legacy wrapper: processSpin(bet) — kept for compatibility.
+    - Calls both phases atomically (old behaviour, single-step).
    ---------------------------------------------------------------- */
 
 /**
- * Process one complete spin.
- * @param {number} bet - the bet amount
- * @returns {{
- *   reels:      Array<Object>,
- *   payout:     number,
- *   multiplier: number,
- *   resultType: string,
- *   label:      string,
- *   net:        number,
- *   balance:    number,
- *   eduTip:     string,
- * }}
+ * Phase 1 — deduct bet, calculate result, but do NOT apply payout yet.
+ * @param {number} bet
+ * @returns {Object|null} pending spin object, or null on validation failure
  */
-function processSpin(bet) {
+function deductBet(bet) {
   if (bet <= 0 || bet > appState.balance) return null;
 
   // Start session timer on first spin
@@ -320,24 +325,41 @@ function processSpin(bet) {
     appState.sessionStartTime = new Date().toISOString();
   }
 
-  // Deduct bet immediately
+  // ── Step 1: deduct bet from balance ──────────────────────────
   appState.balance  -= bet;
   appState.totalBet += bet;
   appState.spins    += 1;
 
-  // Generate result
+  // ── Step 2: generate symbols + calculate payout ───────────────
   const reels  = generateReels();
-  let result = calculatePayout(reels, bet);
-  result = applyComebackMechanic(reels, result, bet); // may boost payout + swap reels to cherries
-  const payout = result.payout;
-  const net    = payout - bet; // net change (negative = loss, positive = win)
+  let result   = calculatePayout(reels, bet);
+  result       = applyComebackMechanic(reels, result, bet);
 
-  // Apply payout
+  // Return a pending object; payout has NOT been added to balance yet
+  return {
+    bet,
+    reels,
+    payout:     result.payout,
+    multiplier: result.multiplier,
+    resultType: result.resultType,
+    label:      result.label,
+  };
+}
+
+/**
+ * Phase 2 — apply payout and record everything after animation.
+ * @param {Object} pending  - object returned by deductBet()
+ * @returns {Object} final result (same shape as old processSpin return)
+ */
+function applySpinResult(pending) {
+  const { bet, reels, payout, multiplier, resultType, label } = pending;
+  const net = payout - bet;  // net balance change (negative = loss)
+
+  // ── Apply payout to balance ───────────────────────────────────
   appState.balance += payout;
 
-  // Update win/loss counters
+  // ── Update win/loss counters ──────────────────────────────────
   if (payout > bet) {
-    // Net win
     appState.winCount         += 1;
     appState.totalWins        += payout;
     appState.currentWinStreak += 1;
@@ -348,14 +370,13 @@ function processSpin(bet) {
       appState.highestWinStreak = appState.currentWinStreak;
     }
   } else if (payout === 0) {
-    // Full loss
     appState.lossCount         += 1;
     appState.totalLosses       += bet;
     appState.currentLossStreak += 1;
     appState.currentWinStreak   = 0;
     if (bet > appState.biggestLoss) appState.biggestLoss = bet;
   } else {
-    // Partial — treat as loss (lost some)
+    // Partial win — player gets something back but still net-negative
     appState.lossCount         += 1;
     const lossAmount = bet - payout;
     appState.totalLosses       += lossAmount;
@@ -364,10 +385,10 @@ function processSpin(bet) {
     if (lossAmount > appState.biggestLoss) appState.biggestLoss = lossAmount;
   }
 
-  // Net profit (from initial balance)
+  // ── Net profit (vs initial balance) ──────────────────────────
   appState.netProfit = appState.balance - appState.initialBalance;
 
-  // Balance history for charts
+  // ── Balance history for charts ────────────────────────────────
   appState.balanceHistory.push({
     time:    new Date().toISOString(),
     balance: appState.balance,
@@ -376,46 +397,59 @@ function processSpin(bet) {
     appState.balanceHistory = appState.balanceHistory.slice(-200);
   }
 
-  // Spin history entry
+  // ── Spin history entry ────────────────────────────────────────
   const spinEntry = {
-    id:          Date.now(),
-    date:        new Date().toISOString(),
-    bet:         bet,
-    reels:       reels.map(r => r.id),
-    payout:      payout,
-    net:         net,
-    resultType:  result.resultType,
-    label:       result.label,
+    id:           Date.now(),
+    date:         new Date().toISOString(),
+    bet,
+    reels:        reels.map(r => r.id),
+    payout,
+    net,
+    resultType,
+    label,
     balanceAfter: appState.balance,
   };
   appState.spinHistory.push(spinEntry);
 
-  // Transaction record
+  // ── Transactions ──────────────────────────────────────────────
+  // Record bet deduction
+  recordTransaction('spin_loss', `Bet: ${label}`, bet, false);
+  // Record payout separately (only if there is one)
   if (payout > 0) {
-    recordTransaction('spin_win', `Spin: ${result.label}`, payout, true);
-  } else {
-    recordTransaction('spin_loss', `Spin: ${result.label}`, bet, false);
+    recordTransaction('spin_win', `Win: ${label}`, payout, true);
   }
 
-  // Persist all
+  // ── Persist ───────────────────────────────────────────────────
   persistSession();
   persistSpinHistory();
   persistTransactions();
   updateRecords();
 
-  // Educational tip for this spin
-  const eduTip = getSpinEducationalTip(result.resultType, appState);
+  // ── Educational tip ───────────────────────────────────────────
+  const eduTip = getSpinEducationalTip(resultType, appState);
 
   return {
     reels,
     payout,
-    multiplier: result.multiplier,
-    resultType: result.resultType,
-    label:      result.label,
+    multiplier,
+    resultType,
+    label,
     net,
-    balance:    appState.balance,
+    balance: appState.balance,
     eduTip,
   };
+}
+
+/**
+ * Legacy single-step spin — calls both phases atomically.
+ * Kept so any external code that still calls processSpin() keeps working.
+ * @param {number} bet
+ * @returns {Object|null}
+ */
+function processSpin(bet) {
+  const pending = deductBet(bet);
+  if (!pending) return null;
+  return applySpinResult(pending);
 }
 
 /* ----------------------------------------------------------------

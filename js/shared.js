@@ -142,10 +142,17 @@ function updateBalanceDisplay(animate = true) {
   SETTINGS APPLICATION
    ---------------------------------------------------------------- */
 function applySettings() {
+  // Sound Effects toggle (controls soundEffects key)
   const soundEl = document.getElementById('soundToggle');
   if (soundEl) {
-    soundEl.checked = appState.settings.sound;
-    soundEl.setAttribute('aria-checked', String(appState.settings.sound));
+    soundEl.checked = !!appState.settings.soundEffects;
+    soundEl.setAttribute('aria-checked', String(!!appState.settings.soundEffects));
+  }
+  // Background Music toggle
+  const bgmEl = document.getElementById('bgmToggle');
+  if (bgmEl) {
+    bgmEl.checked = !!appState.settings.backgroundMusic;
+    bgmEl.setAttribute('aria-checked', String(!!appState.settings.backgroundMusic));
   }
   const animEl = document.getElementById('animationsToggle');
   if (animEl) {
