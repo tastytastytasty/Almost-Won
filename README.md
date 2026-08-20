@@ -1,3 +1,13 @@
+## License
+
+Almost Won is source-available for viewing and educational purposes.
+
+The source code is NOT open-source and may not be copied, redistributed,
+commercially used, or presented as another person's work without
+explicit permission from the copyright holder.
+
+See the [LICENSE](LICENSE) file for the complete terms
+
 # Assets Folder
 
 This folder is reserved for future static assets used by Almost Won.
